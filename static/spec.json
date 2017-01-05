@@ -1,0 +1,156 @@
+{
+    "basePath": "/v1",
+    "consumes": [
+        "application/json"
+    ],
+    "definitions": {
+        "Person": {
+            "properties": {
+                "id": {
+                    "example": 9527,
+                    "required": true,
+                    "type": "integer"
+                },
+                "name": {
+                    "example": "Jesse",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "info": {
+        "title": "FALSY DEMO PERSON API",
+        "version": "0.1"
+    },
+    "paths": {
+        "/person": {
+            "get": {
+                "beforeId": "demo.resources.person.get.normal.before",
+                "operationId": "demo.resources.person.get.normal.person",
+                "parameters": [
+                    {
+                        "default": 1234,
+                        "in": "query",
+                        "name": "id",
+                        "type": "integer",
+                        "validationId": "demo.resources.person.get.normal.person_validate_id"
+                    },
+                    {
+                        "example": "pinkman",
+                        "in": "query",
+                        "name": "name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5normal get\u8bf7\u6c42",
+                "tags": [
+                    "Person",
+                    "Post"
+                ]
+            },
+            "post": {
+                "operationId": "demo.resources.person.post.normal.person",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "payload",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "example": 9527,
+                                    "required": true,
+                                    "type": "integer"
+                                },
+                                "name": {
+                                    "example": "Jesse",
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5normal post\u8bf7\u6c42",
+                "tags": [
+                    "Person",
+                    "Post"
+                ]
+            }
+        },
+        "/person/ref": {
+            "post": {
+                "operationId": "demo.resources.person.post.ref.person",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "payload",
+                        "schema": {
+                            "$ref": "#/definitions/Person"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5normal post\u8bf7\u6c42 with ref",
+                "tags": [
+                    "Person",
+                    "Post"
+                ]
+            }
+        },
+        "/person/split": {
+            "post": {
+                "operationId": "demo.resources.person.post.splitted.person",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "payload",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "example": 9527,
+                                    "required": true,
+                                    "type": "integer"
+                                },
+                                "name": {
+                                    "example": "Jesse",
+                                    "type": "string"
+                                }
+                            },
+                            "splitted": true,
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5splitted post\u8bf7\u6c42",
+                "tags": [
+                    "Post"
+                ]
+            }
+        }
+    },
+    "produces": [
+        "application/json"
+    ],
+    "swagger": "2.0"
+}

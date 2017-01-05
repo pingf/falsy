@@ -1,0 +1,124 @@
+swagger: '2.0'
+info:
+  title: FALSY SIMPLE DEMO API
+  version: "0.1"
+consumes:
+  - application/json
+produces:
+  - application/json
+basePath: "/v1"
+paths:
+  '/hello_required_backend':
+    get:
+      tags: [All]
+      operationId: demo.valid.ops.hello.get_it_required
+      summary: 测试get请求
+      parameters:
+        - name: name
+          in: query
+          type: string
+          default: 'john'
+          validationId: demo.valid.ops.hello.validate_get_required
+      responses:
+        200:
+          description: Return persons
+  '/hello_required':
+    get:
+      tags: [All]
+      operationId: demo.valid.ops.hello.get_it_required
+      summary: 测试get请求
+      parameters:
+        - name: name
+          in: query
+          type: string
+          default: 'john'
+          required: true
+      responses:
+        200:
+          description: Return persons
+  '/hello_in_query':
+    get:
+      tags: [All]
+      operationId: demo.valid.ops.hello.get_it
+      summary: 测试get请求
+      description: name需要大于等于6字符
+      parameters:
+        - name: name
+          validationId: demo.valid.ops.hello.validate_get_more_than_6
+          in: query
+          type: string
+          default: 'john'
+          required: true
+      responses:
+        200:
+          description: Return persons
+  '/hello_in_path/{name}':
+    get:
+      tags: [All]
+      operationId: demo.valid.ops.hello.get_it
+      summary: 测试get请求
+      description: name需要大于等于6字符
+      parameters:
+        - name: name
+          validationId: demo.valid.ops.hello.validate_get_more_than_6
+          in: path
+          type: string
+          default: 'john'
+          required: true
+      responses:
+        200:
+          description: Return persons
+  '/hello':
+    get:
+      tags: [All]
+      operationId: demo.valid.ops.hello.get_it
+      summary: 测试get请求
+      description: name需要大于等于6字符
+      parameters:
+        - name: name
+          validationId: demo.valid.ops.hello.validate_get_more_than_6
+          in: query
+          type: string
+          default: 'john'
+          required: true
+      responses:
+        200:
+          description: Return persons
+    post:
+      tags: [All, Post]
+      operationId: demo.valid.ops.hello.post_it
+      summary: 测试post请求
+      parameters:
+        - name: name
+          in: body
+          validationId: demo.valid.ops.hello.validate_post_name_more_than_8
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                default: 'john'
+      responses:
+        200:
+          description: Return persons
+  '/hello_2':
+    get:
+      tags: [All]
+      beforeId: demo.valid.ops.hello.before_get_it2
+      operationId: demo.valid.ops.hello.get_it2
+      summary: 测试get请求
+      description: name需要大于等于6字符
+      parameters:
+        - name: name
+          in: query
+          type: string
+          default: 'john'
+          required: true
+        - name: id
+          in: query
+          type: string
+          default: 'john'
+          required: true
+      responses:
+        200:
+          description: Return persons

@@ -1,0 +1,13 @@
+swagger: '2.0'
+info:
+  title: FALSY SIMPLE DEMO API
+  version: "0.1"
+consumes:
+  - application/json
+produces:
+  - application/json
+basePath: "/v1"
+paths:
+  '/hello':
+    get: !include ./get.yml
+    post: !include ./post.yml

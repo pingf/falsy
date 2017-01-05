@@ -1,0 +1,119 @@
+{
+    "afterId": "demo.simple.ops.hello.after_it",
+    "basePath": "/v1",
+    "consumes": [
+        "application/json"
+    ],
+    "info": {
+        "title": "FALSY SIMPLE DEMO API",
+        "version": "0.1"
+    },
+    "paths": {
+        "/hello": {
+            "delete": {
+                "operationId": "demo.simple.ops.hello.delete_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5post\u8bf7\u6c42",
+                "tags": [
+                    "Get"
+                ]
+            },
+            "get": {
+                "operationId": "demo.simple.ops.hello.get_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5get\u8bf7\u6c42",
+                "tags": [
+                    "Get"
+                ]
+            },
+            "patch": {
+                "operationId": "demo.simple.ops.hello.patch_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5post\u8bf7\u6c42",
+                "tags": [
+                    "Get"
+                ]
+            },
+            "post": {
+                "operationId": "demo.simple.ops.hello.post_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5post\u8bf7\u6c42",
+                "tags": [
+                    "Get"
+                ]
+            },
+            "put": {
+                "operationId": "demo.simple.ops.hello.put_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5post\u8bf7\u6c42",
+                "tags": [
+                    "Get"
+                ]
+            }
+        }
+    },
+    "produces": [
+        "application/json"
+    ],
+    "swagger": "2.0"
+}

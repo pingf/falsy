@@ -1,0 +1,84 @@
+{
+    "basePath": "/v1",
+    "consumes": [
+        "application/json"
+    ],
+    "info": {
+        "title": "FALSY API",
+        "version": "0.1"
+    },
+    "paths": {
+        "/test_post": {
+            "post": {
+                "operationId": "demo.test.test_post",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "payload",
+                        "schema": {
+                            "properties": {
+                                "key1": {
+                                    "example": "hello",
+                                    "type": "string"
+                                },
+                                "key2": {
+                                    "example": "world",
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return pets"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5post\u8bf7\u6c42",
+                "tags": [
+                    "Post"
+                ]
+            }
+        },
+        "/test_spost": {
+            "post": {
+                "operationId": "demo.test.test_spost",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "payload",
+                        "schema": {
+                            "properties": {
+                                "key1": {
+                                    "example": "hello",
+                                    "required": true,
+                                    "type": "string"
+                                },
+                                "key2": {
+                                    "example": "world",
+                                    "type": "string"
+                                }
+                            },
+                            "splitted": true,
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return pets"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5post\u8bf7\u6c42",
+                "tags": [
+                    "Post"
+                ]
+            }
+        }
+    },
+    "produces": [
+        "application/json"
+    ],
+    "swagger": "2.0"
+}

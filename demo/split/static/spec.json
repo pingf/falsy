@@ -1,0 +1,171 @@
+{
+    "basePath": "/v1",
+    "consumes": [
+        "application/json"
+    ],
+    "info": {
+        "title": "FALSY SIMPLE DEMO API",
+        "version": "0.1"
+    },
+    "paths": {
+        "/hello": {
+            "get": {
+                "description": "name\u9700\u8981\u5927\u4e8e\u7b49\u4e8e6\u5b57\u7b26",
+                "operationId": "demo.valid.ops.hello.get_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "required": true,
+                        "type": "string",
+                        "validationId": "demo.valid.ops.hello.validate_get_more_than_6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5get\u8bf7\u6c42",
+                "tags": [
+                    "All",
+                    "Get"
+                ]
+            },
+            "post": {
+                "operationId": "demo.valid.ops.hello.post_it",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "name",
+                        "schema": {
+                            "properties": {
+                                "name": {
+                                    "default": "john",
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "validationId": "demo.valid.ops.hello.validate_post_name_more_than_8"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5post\u8bf7\u6c42",
+                "tags": [
+                    "All",
+                    "Post"
+                ]
+            }
+        },
+        "/hello_in_path/{name}": {
+            "get": {
+                "description": "name\u9700\u8981\u5927\u4e8e\u7b49\u4e8e6\u5b57\u7b26",
+                "operationId": "demo.valid.ops.hello.get_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "path",
+                        "name": "name",
+                        "required": true,
+                        "type": "string",
+                        "validationId": "demo.valid.ops.hello.validate_get_more_than_6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5get\u8bf7\u6c42",
+                "tags": [
+                    "All",
+                    "Get"
+                ]
+            }
+        },
+        "/hello_in_query": {
+            "get": {
+                "description": "name\u9700\u8981\u5927\u4e8e\u7b49\u4e8e6\u5b57\u7b26",
+                "operationId": "demo.valid.ops.hello.get_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "required": true,
+                        "type": "string",
+                        "validationId": "demo.valid.ops.hello.validate_get_more_than_6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5get\u8bf7\u6c42",
+                "tags": [
+                    "All",
+                    "Get"
+                ]
+            }
+        },
+        "/hello_required": {
+            "get": {
+                "operationId": "demo.valid.ops.hello.get_it_required",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5get\u8bf7\u6c42",
+                "tags": [
+                    "All",
+                    "Get"
+                ]
+            }
+        },
+        "/hello_required_backend": {
+            "get": {
+                "operationId": "demo.valid.ops.hello.get_it_required",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "type": "string",
+                        "validationId": "demo.valid.ops.hello.validate_get_required"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5get\u8bf7\u6c42",
+                "tags": [
+                    "All",
+                    "Get"
+                ]
+            }
+        }
+    },
+    "produces": [
+        "application/json"
+    ],
+    "swagger": "2.0"
+}

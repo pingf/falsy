@@ -1,0 +1,66 @@
+#SwaggerUi .swagger-section .title {
+  font-style: bold;
+}
+#SwaggerUi .swagger-section .secondary_form {
+  display: none;
+}
+#SwaggerUi .swagger-section .main_image {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+#SwaggerUi .swagger-section .oauth_body {
+  margin-left: 100px;
+  margin-right: 100px;
+}
+#SwaggerUi .swagger-section .oauth_submit {
+  text-align: center;
+}
+#SwaggerUi .swagger-section .api-popup-dialog {
+  z-index: 10000;
+  position: absolute;
+  width: 500px;
+  background: #FFF;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: none;
+  font-size: 13px;
+  color: #777;
+}
+#SwaggerUi .swagger-section .api-popup-dialog .api-popup-title {
+  font-size: 24px;
+  padding: 10px 0;
+}
+#SwaggerUi .swagger-section .api-popup-dialog .api-popup-title {
+  font-size: 24px;
+  padding: 10px 0;
+}
+#SwaggerUi .swagger-section .api-popup-dialog p.error-msg {
+  padding-left: 5px;
+  padding-bottom: 5px;
+}
+#SwaggerUi .swagger-section .api-popup-dialog button.api-popup-authbtn {
+  height: 30px;
+}
+#SwaggerUi .swagger-section .api-popup-dialog button.api-popup-cancel {
+  height: 30px;
+}
+#SwaggerUi .swagger-section .api-popup-scopes {
+  padding: 10px 20px;
+}
+#SwaggerUi .swagger-section .api-popup-scopes li {
+  padding: 5px 0;
+  line-height: 20px;
+}
+#SwaggerUi .swagger-section .api-popup-scopes .api-scope-desc {
+  padding-left: 20px;
+  font-style: italic;
+}
+#SwaggerUi .swagger-section .api-popup-scopes li input {
+  position: relative;
+  top: 2px;
+}
+#SwaggerUi .swagger-section .api-popup-actions {
+  padding-top: 10px;
+}
