@@ -63,5 +63,5 @@ FAL.S.Y
   
 ## screen gif
 
-[![ScreenShot](https://raw.githubusercontent.com/pingf/falsy/master/falsy.gif)]
+![ScreenShot](https://raw.githubusercontent.com/pingf/falsy/master/falsy.gif)
   
