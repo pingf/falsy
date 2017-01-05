@@ -20,7 +20,7 @@ FAL.S.Y
     api = f.api
   ```
 2. writting the yml file
-  ```yml
+  ```
   swagger: '2.0'
   info:
     title: FALSY SIMPLE DEMO API
@@ -47,6 +47,7 @@ FAL.S.Y
           200:
             description: Return response
   ```
+  
 3. writting the operation handler(demo.py)
   ```python
   def get_it(name):
