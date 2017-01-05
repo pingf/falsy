@@ -5,6 +5,9 @@ FAL.S.Y
   it's a api framework.
   using falcon, swagger, yaml together!
   
+### license
+  MIT and Apache v2
+
 ### how to install it
   `pip install falsy`
   
