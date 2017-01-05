@@ -10,6 +10,8 @@ FAL.S.Y
   
 ### showtime
 
+the transition animation is a little bit slow because of the record software
+
 ![ScreenShot](https://raw.githubusercontent.com/pingf/falsy/master/demo.gif)
 
 
