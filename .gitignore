@@ -1,0 +1,8 @@
+.idea/
+**/*.pyc
+**/__pycache__
+.ipynb_checkpoints/
+*.ipynb
+static/*
+.tox/*
+dist/*
