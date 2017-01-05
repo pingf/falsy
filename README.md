@@ -7,6 +7,11 @@ FAL.S.Y
   
 ### license
   MIT and Apache v2
+  
+### showtime
+
+![ScreenShot](https://raw.githubusercontent.com/pingf/falsy/master/demo.gif)
+
 
 ### how to install it
   `pip install falsy`
