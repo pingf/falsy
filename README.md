@@ -29,8 +29,6 @@ FAL.S.Y
     - application/json
   produces:
     - application/json
-  beforeId: demo.global_ba.ops.hello.before_all
-  afterId: demo.global_ba.ops.hello.after_all
   basePath: "/v1"
   paths:
     '/hello':
