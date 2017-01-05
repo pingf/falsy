@@ -61,3 +61,7 @@ FAL.S.Y
   `http://0.0.0.0:8001/v1/ui/`
   make sure it ends with '/'
   
+## screen gif
+
+[![ScreenShot](https://raw.githubusercontent.com/pingf/falsy/master/falsy.gif)]
+  
