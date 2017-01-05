@@ -47,7 +47,7 @@ FAL.S.Y
           200:
             description: Return response
   ```
-  3. writting the operation handler(demo.py)
+3. writting the operation handler(demo.py)
   ```python
   def get_it(name):
     return {
@@ -55,10 +55,10 @@ FAL.S.Y
     }
   ```
   
-  4. run it
+4. run it
   `gunicorn -b 0.0.0.0:8001 main:api --reload -w 1 --threads 1`
   
-  5. visit the ui page
+5. visit the ui page
   `http://0.0.0.0:8001/v1/ui/`
   make sure it ends with '/'
   
