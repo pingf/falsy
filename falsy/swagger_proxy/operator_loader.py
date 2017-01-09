@@ -1,4 +1,3 @@
-import pprint
 
 import falcon
 import json
@@ -54,7 +53,8 @@ class OperatorLoader:
                 elif in_ == 'body':
                     value = self.param_in_body(req, spec, param)
                     if type(value) == tuple or type(value) == list:
-                        return value[0]
+                        if type(value[0]) == dict and type(value[1]) == str:
+                            return value[0]
                 else:
                     value = None
                 results[name] = value
@@ -140,6 +140,10 @@ class OperatorLoader:
             raise falcon.HTTPMissingParam(name)
         default_func = lambda v: v if type_ is not None else None
 
+        def array_check(value):
+            doc = json.loads(value)
+            return doc
+
         def object_check(value):
             doc = json.loads(value)
             if schema.get('splitted'):
@@ -152,7 +156,7 @@ class OperatorLoader:
             'string': lambda v: str(v),
             'integer': lambda v: int(v),
             'float': lambda v: float(v),
-            'array': lambda v: list(v),
+            'array': array_check,
             'object': object_check,
         }
         try:

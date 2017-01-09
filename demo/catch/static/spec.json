@@ -1,0 +1,58 @@
+{
+    "basePath": "/v1",
+    "consumes": [
+        "application/json"
+    ],
+    "info": {
+        "title": "FALSY SIMPLE DEMO API",
+        "version": "0.1"
+    },
+    "paths": {
+        "/hello": {
+            "get": {
+                "operationId": "demo.catch.ops.hello.get_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5get\u8bf7\u6c42",
+                "tags": [
+                    "Method"
+                ]
+            },
+            "post": {
+                "operationId": "demo.catch.ops.hello.post_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return persons"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5post\u8bf7\u6c42",
+                "tags": [
+                    "Method"
+                ]
+            }
+        }
+    },
+    "produces": [
+        "application/json"
+    ],
+    "swagger": "2.0"
+}
