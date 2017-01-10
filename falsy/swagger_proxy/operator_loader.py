@@ -59,7 +59,7 @@ class OperatorLoader:
                     value = None
                 results[name] = value
             return results
-        return
+        return {}
 
     def param_in_query(self, req, param):
         name = param.get('name')

@@ -104,8 +104,7 @@ class SwaggerServer:
                 if match:
                     handler, params, before, after, mode = op_loader.load(req=self.req, spec=spec,
                                                                           matched_uri=match)
-                    if not handler:
-                        return
+
                     if before:
                         before(req=self.req, resp=self.resp, **params)
                     if mode == 'raw':

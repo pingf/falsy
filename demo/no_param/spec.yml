@@ -11,61 +11,36 @@ paths:
   '/hello':
     get:
       tags: [Method]
-      operationId: demo.simple.ops.hello.get_it
+      operationId: demo.no_param.ops.hello.get_it
       summary: 测试get请求
-      parameters:
-        - name: name
-          in: query
-          type: string
-          default: 'john'
       responses:
         200:
           description: Return response
     post:
       tags: [Method]
-      operationId: demo.simple.ops.hello.post_it
+      operationId: demo.no_param.ops.hello.post_it
       summary: 测试post请求
-      parameters:
-        - name: name
-          in: query
-          type: string
-          default: 'john'
       responses:
         200:
           description: Return response
     delete:
       tags: [Method]
-      operationId: demo.simple.ops.hello.delete_it
+      operationId: demo.no_param.ops.hello.delete_it
       summary: 测试delete请求
-      parameters:
-        - name: name
-          in: query
-          type: string
-          default: 'john'
       responses:
         200:
           description: Return response
     put:
       tags: [Method]
-      operationId: demo.simple.ops.hello.put_it
+      operationId: demo.no_param.ops.hello.put_it
       summary: 测试put请求
-      parameters:
-        - name: name
-          in: query
-          type: string
-          default: 'john'
       responses:
         200:
           description: Return response
     patch:
       tags: [Method]
-      operationId: demo.simple.ops.hello.patch_it
+      operationId: demo.no_param.ops.hello.patch_it
       summary: 测试patch请求
-      parameters:
-        - name: name
-          in: query
-          type: string
-          default: 'john'
       responses:
         200:
           description: Return response
