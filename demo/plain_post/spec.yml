@@ -1,0 +1,26 @@
+swagger: '2.0'
+info:
+  title: FALSY SIMPLE DEMO API
+  version: "0.1"
+consumes:
+  - application/json
+produces:
+  - application/json
+basePath: "/v1"
+paths:
+  '/hello':
+    post:
+      consumes:
+        - plain/text
+      tags: [Method]
+      operationId: demo.plain_post.ops.hello.post_it
+      summary: 测试post请求
+      parameters:
+        - name: name
+          in: body
+          schema:
+            type: string
+            default: 'hahahaha'
+      responses:
+        200:
+          description: Return response
