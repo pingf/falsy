@@ -179,10 +179,10 @@ class OperatorLoader:
 
             default_func = lambda v: v if type_ is not None else None
             check_funcs = {
-                'string': lambda v: str(v) if value else None,
-                'integer': lambda v: int(v) if value else None,
-                'float': lambda v: float(v) if value else None,
-                'array': lambda v: list(v) if value else None,
+                'string': lambda v: str(v) if value is not None else None,
+                'integer': lambda v: int(v) if value is not None else None,
+                'float': lambda v: float(v) if value is not None else None,
+                'array': lambda v: list(v) if value is not None else None,
             }
             try:
                 value = check_funcs.get(type_, default_func)(value)
