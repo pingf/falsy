@@ -9,6 +9,26 @@
     },
     "paths": {
         "/hello": {
+            "delete": {
+                "operationId": "demo.simple.ops.hello.delete_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return response"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5delete\u8bf7\u6c42",
+                "tags": [
+                    "Method"
+                ]
+            },
             "get": {
                 "operationId": "demo.simple.ops.hello.get_it",
                 "parameters": [
@@ -21,10 +41,30 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Return persons"
+                        "description": "Return response"
                     }
                 },
                 "summary": "\u6d4b\u8bd5get\u8bf7\u6c42",
+                "tags": [
+                    "Method"
+                ]
+            },
+            "patch": {
+                "operationId": "demo.simple.ops.hello.patch_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return response"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5patch\u8bf7\u6c42",
                 "tags": [
                     "Method"
                 ]
@@ -41,10 +81,30 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Return persons"
+                        "description": "Return response"
                     }
                 },
                 "summary": "\u6d4b\u8bd5post\u8bf7\u6c42",
+                "tags": [
+                    "Method"
+                ]
+            },
+            "put": {
+                "operationId": "demo.simple.ops.hello.put_it",
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "query",
+                        "name": "name",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return response"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5put\u8bf7\u6c42",
                 "tags": [
                     "Method"
                 ]

@@ -73,3 +73,8 @@ FAL.S.Y
 
 ![ScreenShot](https://raw.githubusercontent.com/pingf/falsy/master/falsy.gif)
   
+### extensions
+    
+    there some improvements compare to standard swagger, 
+    you can define `operationId` for handler, 'beforeId' and 'afterId' for aop hooks,
+    and 'validationId' for validator, see the files in demo dir for details.
