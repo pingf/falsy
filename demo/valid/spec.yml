@@ -87,9 +87,10 @@ paths:
     post:
       tags: [All, Post]
       operationId: demo.valid.ops.hello.post_it
+      validationId: demo.valid.ops.hello.validate_post_name_starts_with_john
       summary: 测试post请求
       parameters:
-        - name: name
+        - name: payload
           in: body
           validationId: demo.valid.ops.hello.validate_post_name_more_than_8
           schema:

@@ -24,12 +24,13 @@ class SpecLoader:
             raise Exception("Unable to parse the Swagger spec JSON document.")
         try:
             self.specs['basePath'] = swagger_spec.get('basePath')
-            self.specs['beforeId'] = swagger_spec.get('beforeId')
-            self.specs['afterId'] = swagger_spec.get('afterId')
+            self.specs['beforeId'] = self.load_handler(swagger_spec.get('beforeId'))
+            self.specs['afterId'] = self.load_handler(swagger_spec.get('afterId'))
             for path, path_content in swagger_spec['paths'].items():
                 self.load_paths(path, path_content, swagger_spec)
         except:
             raise Exception("Unable to build routing table from provided Swagger spec.")
+        # pprint.pprint(self.specs)
         return self.specs
 
     def load_paths(self, path, path_content, swagger_spec):
@@ -41,12 +42,17 @@ class SpecLoader:
             '/' + method.lower() + swagger_spec['basePath'] + path)
         self.specs[uri_regex] = {'uri_fields': uri_fields}
         for attribute, attribute_content in method_content.items():
+            if attribute in ['beforeId', 'afterId', 'operationId', 'validationId']:
+                attribute_content = self.load_handler(attribute_content)
+            # attribute['beforeId'] = self.load_handler(attribute.get('beforeId'))
+            # attribute['afterId'] = self.load_handler(attribute.get('afterId'))
+            # attribute['operationId'] = self.load_handler(attribute.get('operationId'))
             self.load_attributes(attribute, attribute_content, swagger_spec, uri_regex)
 
     def load_attributes(self, attribute, attribute_content, swagger_spec, uri_regex):
         self.specs[uri_regex][attribute] = attribute_content
         if attribute == 'parameters':
-            for param in attribute_content:
+            for i,param in enumerate(attribute_content):
                 if param.get('in') == 'body':
                     schema = param.get('schema')
                     ref = schema.get('$ref')
@@ -55,3 +61,10 @@ class SpecLoader:
                             ref[ref.rfind('/') + 1:]]
                     else:
                         self.specs[uri_regex]['schema'] = schema
+
+                self.specs[uri_regex][attribute][i]['validationId'] = self.load_handler(param.get('validationId'))
+
+    def load_handler(self, name):
+        if name is None:
+            return None
+        return get_function_from_name(name)

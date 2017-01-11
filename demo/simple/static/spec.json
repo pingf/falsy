@@ -1,7 +1,5 @@
 {
-    "afterId": "demo.global_ba.ops.hello.after_all",
     "basePath": "/v1",
-    "beforeId": "demo.global_ba.ops.hello.before_all",
     "consumes": [
         "application/json"
     ],
@@ -11,28 +9,8 @@
     },
     "paths": {
         "/hello": {
-            "delete": {
-                "operationId": "demo.global_ba.ops.hello.delete_it",
-                "parameters": [
-                    {
-                        "default": "john",
-                        "in": "query",
-                        "name": "name",
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Return response"
-                    }
-                },
-                "summary": "\u6d4b\u8bd5delete\u8bf7\u6c42",
-                "tags": [
-                    "Method"
-                ]
-            },
             "get": {
-                "operationId": "demo.global_ba.ops.hello.get_it",
+                "operationId": "demo.simple.ops.hello.get_it",
                 "parameters": [
                     {
                         "default": "john",
@@ -43,7 +21,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Return response"
+                        "description": "Return persons"
                     }
                 },
                 "summary": "\u6d4b\u8bd5get\u8bf7\u6c42",
@@ -51,28 +29,8 @@
                     "Method"
                 ]
             },
-            "patch": {
-                "operationId": "demo.global_ba.ops.hello.patch_it",
-                "parameters": [
-                    {
-                        "default": "john",
-                        "in": "query",
-                        "name": "name",
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Return response"
-                    }
-                },
-                "summary": "\u6d4b\u8bd5patch\u8bf7\u6c42",
-                "tags": [
-                    "Method"
-                ]
-            },
             "post": {
-                "operationId": "demo.global_ba.ops.hello.post_it",
+                "operationId": "demo.simple.ops.hello.post_it",
                 "parameters": [
                     {
                         "default": "john",
@@ -83,30 +41,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Return response"
+                        "description": "Return persons"
                     }
                 },
                 "summary": "\u6d4b\u8bd5post\u8bf7\u6c42",
-                "tags": [
-                    "Method"
-                ]
-            },
-            "put": {
-                "operationId": "demo.global_ba.ops.hello.put_it",
-                "parameters": [
-                    {
-                        "default": "john",
-                        "in": "query",
-                        "name": "name",
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Return response"
-                    }
-                },
-                "summary": "\u6d4b\u8bd5put\u8bf7\u6c42",
                 "tags": [
                     "Method"
                 ]

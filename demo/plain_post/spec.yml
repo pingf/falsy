@@ -18,6 +18,7 @@ paths:
       parameters:
         - name: name
           in: body
+          validationId: demo.plain_post.ops.hello.more_than_8
           schema:
             type: string
             default: 'hahahaha'

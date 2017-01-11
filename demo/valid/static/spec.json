@@ -36,7 +36,7 @@
                 "parameters": [
                     {
                         "in": "body",
-                        "name": "name",
+                        "name": "payload",
                         "schema": {
                             "properties": {
                                 "name": {

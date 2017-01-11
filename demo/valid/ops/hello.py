@@ -3,16 +3,23 @@ import json
 import falcon
 
 
-def validate_get_more_than_6(name):
-    if len(name) < 6:
-        return False, 'less than 6'
+def validate_post_name_starts_with_john(payload):
+    name = payload['name']
+    if not name.startswith('john'):
+        return False, 'not starts with john'
     return True
 
 
-def validate_post_name_more_than_8(name):
-    # name = json.loads(name)
-    if len(name['name']) < 8:
+def validate_post_name_more_than_8(payload):
+    name = payload['name']
+    if len(name) < 8:
         return False, 'less than 8'
+    return True
+
+
+def validate_get_more_than_6(name):
+    if len(name) < 6:
+        return False, 'less than 6'
     return True
 
 
@@ -48,9 +55,9 @@ def get_it2(name, id):
     }
 
 
-def post_it(name):
+def post_it(payload):
     return {
-        'post': name
+        'post': payload
     }
 
 

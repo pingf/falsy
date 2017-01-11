@@ -1,4 +1,3 @@
-
 import falcon
 import json
 import logging
@@ -14,8 +13,8 @@ class OperatorLoader:
         bid = spec.get('beforeId')
         aid = spec.get('afterId')
         try:
-            before = get_function_from_name(bid)
-            after = get_function_from_name(aid)
+            before = bid  # get_function_from_name(bid)
+            after = aid  # get_function_from_name(aid)
         except Exception as e:
             print(e, type(e))
             print('handler dynamic load error')
@@ -24,22 +23,26 @@ class OperatorLoader:
             return before, after
 
     def load(self, req, spec, matched_uri):
+        vid = spec.get('validationId')
         aid = spec.get('afterId')
         oid = spec.get('operationId')
         bid = spec.get('beforeId')
         omode = spec.get('operationMode')
         try:
-            before = get_function_from_name(bid)
-            handler = get_function_from_name(oid)
-            after = get_function_from_name(aid)
+            validator = vid
+            before = bid  # get_function_from_name(bid)
+            handler = oid  # get_function_from_name(oid)
+            after = aid  # get_function_from_name(aid)
         except Exception as e:
             print(e, type(e))
             print('handler dynamic load error')
             raise falcon.HTTPMissingParam('opid invalid')
         else:
-            return handler, self.load_params(req, spec.get('parameters'), matched_uri, spec), before, after, omode
+            return handler, self.load_params(req, spec.get('parameters'), matched_uri, spec,
+                                             validator), before, after, omode
 
-    def load_params(self, req, params, matched_uri, spec):
+    def load_params(self, req, params, matched_uri, spec, validator):
+
         if params:
             results = {}
             for param in params:
@@ -52,13 +55,19 @@ class OperatorLoader:
                     value = self.param_in_path(matched_uri, param)
                 elif in_ == 'body':
                     value = self.param_in_body(req, spec, param)
-                    if type(value) == tuple or type(value) == list:
-                        if type(value[0]) == dict and type(value[1]) == str:
-                            return value[0]
+                    # if type(value) == tuple or type(value) == list:
+                    #     if type(value[0]) == dict and type(value[1]) == str:
+                    #         self.custom_validate_all(validator, **value[0])
+                    #         return value[0]
                 else:
                     value = None
                 results[name] = value
+            if len(results) == 0:
+                self.custom_validate_all(validator)
+            else:
+                self.custom_validate_all(validator, **results)
             return results
+        self.custom_validate_all(validator)
         return {}
 
     def param_in_query(self, req, param):
@@ -81,33 +90,46 @@ class OperatorLoader:
             raise falcon.HTTPMissingParam(name)
 
         vid = param.get('validationId')
-        print(vid, value, param)
         self.custom_validate(vid, value)
         return value
 
     def custom_validate(self, vid, value):
-        if vid:
-            try:
-                validator = get_function_from_name(vid)
-            except Exception as e:
-                print(e, type(e))
-                print('validator dynamic load error')
-                raise falcon.HTTPInvalidParam('invalid param in query(custom validation exception), value:', str(value))
-            try:
-                if validator:
-                    validated = validator(value)
-            except Exception as e:
-                raise falcon.HTTPInvalidParam('invalid param in query(custom validation exception), value:', str(value))
+        validator = vid  # get_function_from_name(vid)
+        validated = None
+        try:
+            if validator:
+                validated = validator(value)
+        except Exception as e:
+            raise falcon.HTTPInvalidParam('invalid param in query(custom validation exception), value:', str(value))
 
-            if type(validated) == list or type(validated) == tuple:
-                va = validated[0]
-                ext = validated[1]
-                if va is None or va is False:
-                    raise falcon.HTTPInvalidParam('invalid param in query(custom validation), value:',
-                                                  str(value) + ' info:' + ext)
-            else:
-                if validated is None or validated is False:
-                    raise falcon.HTTPInvalidParam('invalid param in query(custom validation), value:', str(value))
+        if type(validated) == list or type(validated) == tuple:
+            va = validated[0]
+            ext = validated[1]
+            if va is None or va is False:
+                raise falcon.HTTPInvalidParam('invalid param in query(custom validation), value:',
+                                              str(value) + ' info:' + ext)
+        else:
+            if validated is False:
+                raise falcon.HTTPInvalidParam('invalid param in query(custom validation), value:', str(value))
+
+    def custom_validate_all(self, vid, **kwargs):
+        validator = vid  # get_function_from_name(vid)
+        validated = None
+        try:
+            if validator:
+                validated = validator(**kwargs) if len(kwargs)>0 else validator(**kwargs)
+        except Exception as e:
+            raise falcon.HTTPInvalidParam('invalid param in query(custom validation exception), value:', str(kwargs))
+
+        if type(validated) == list or type(validated) == tuple:
+            va = validated[0]
+            ext = validated[1]
+            if va is None or va is False:
+                raise falcon.HTTPInvalidParam('invalid param when calling(custom validation), values:',
+                                              str(kwargs) + ' info:' + ext)
+        else:
+            if validated is False:
+                raise falcon.HTTPInvalidParam('invalid param when calling(custom validation), values:', str(kwargs))
 
     def param_in_path(self, matched_uri, param):
         type_ = param.get('type')
@@ -146,11 +168,7 @@ class OperatorLoader:
 
         def object_check(value):
             doc = json.loads(value)
-            if schema.get('splitted'):
-                values = self.param_in_body_splitted(schema, doc)
-                return values, 'splitted'
-            else:
-                return doc
+            return doc
 
         check_funcs = {
             'string': lambda v: str(v),
@@ -166,29 +184,3 @@ class OperatorLoader:
         vid = param.get('validationId')
         self.custom_validate(vid, value)
         return value
-
-    def param_in_body_splitted(self, schema, doc):
-        values = {}
-        properties = schema.get('properties')
-        for name, property_ in properties.items():
-            required = property_.get('required')
-            type_ = property_['type']
-            value = doc.get(name)
-            if required and value is None:
-                raise falcon.HTTPMissingParam(name)
-
-            default_func = lambda v: v if type_ is not None else None
-            check_funcs = {
-                'string': lambda v: str(v) if value is not None else None,
-                'integer': lambda v: int(v) if value is not None else None,
-                'float': lambda v: float(v) if value is not None else None,
-                'array': lambda v: list(v) if value is not None else None,
-            }
-            try:
-                value = check_funcs.get(type_, default_func)(value)
-                vid = property_.get('validationId')
-                self.custom_validate(vid, value)
-                values[name] = value
-            except ValueError as e:
-                raise falcon.HTTPInvalidParam('invalid param in path', name)
-        return values

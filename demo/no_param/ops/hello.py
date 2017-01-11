@@ -26,3 +26,4 @@ def patch_it():
     return {
         'patch': 'no param'
     }
+
