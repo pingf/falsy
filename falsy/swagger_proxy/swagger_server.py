@@ -90,7 +90,7 @@ class SwaggerServer:
 
     def dispatch(self):
         op_loader = OperatorLoader()
-        base_before, base_after = op_loader.load_base(self.specs)
+        base_before, base_after, base_excp= op_loader.load_base(self.specs)
         if base_before:
             base_before(req=self.req, resp=self.resp)
         for uri_regex, spec in self.specs.items():
@@ -102,22 +102,31 @@ class SwaggerServer:
                     continue
                 match = uri_regex.match(route_signature)
                 if match:
-                    handler, params, before, after, mode = op_loader.load(req=self.req, spec=spec,
+                    handler, params, before, after, excp, mode = op_loader.load(req=self.req, spec=spec,
                                                                           matched_uri=match)
 
-                    if before:
-                        before(req=self.req, resp=self.resp, **params)
-                    if mode == 'raw':
-                        handler_return = handler(req=self.req, resp=self.resp)
-                    elif mode == 'more':
-                        handler_return = handler(req=self.req, resp=self.resp, **params)
-                    else:
-                        handler_return = handler(**params)
-                    self.process_response(handler_return)
-                    if after:
-                        after(req=self.req, resp=self.resp, response=handler_return, **params)
-                    if base_after:
-                        base_after(req=self.req, resp=self.resp, response=handler_return)
+                    handler_return = None
+                    try:
+                        if before:
+                            before(req=self.req, resp=self.resp, **params)
+                        if mode == 'raw':
+                            handler_return = handler(req=self.req, resp=self.resp)
+                        elif mode == 'more':
+                            handler_return = handler(req=self.req, resp=self.resp, **params)
+                        else:
+                            handler_return = handler(**params)
+                        self.process_response(handler_return)
+                        if after:
+                            after(req=self.req, resp=self.resp, response=handler_return, **params)
+                        if base_after:
+                            base_after(req=self.req, resp=self.resp, response=handler_return)
+                    except Exception as e:
+                        if excp is None and base_excp is None:
+                            raise e
+                        if excp is not None:
+                            excp(req=self.req, resp=self.resp, error=e)
+                        if base_excp is not None:
+                            base_excp(req=self.req, resp=self.resp, error=e)
                     return
             except AttributeError as e:
                 print(e, 'catched')
@@ -128,6 +137,11 @@ class SwaggerServer:
         raise falcon.HTTPNotFound()
 
     def process_response(self, handler_return):
+        content_type = 'text/plain'
+        if handler_return is None:
+            #when exceptions happend
+            content_type = 'application/json'
+            http_code = falcon.HTTP_500
         if type(handler_return) == tuple or type(handler_return) == list:
             data = handler_return[0]
             if type(data) == dict:

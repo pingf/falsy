@@ -12,34 +12,32 @@ class OperatorLoader:
     def load_base(self, spec):
         bid = spec.get('beforeId')
         aid = spec.get('afterId')
-        try:
-            before = bid  # get_function_from_name(bid)
-            after = aid  # get_function_from_name(aid)
-        except Exception as e:
-            print(e, type(e))
-            print('handler dynamic load error')
-            raise falcon.HTTPMissingParam('bid or aid invalid')
-        else:
-            return before, after
+        eid = spec.get('exceptionId')
+        before = bid  # get_function_from_name(bid)
+        after = aid  # get_function_from_name(aid)
+        excp = eid
+        return before, after, excp
 
     def load(self, req, spec, matched_uri):
         vid = spec.get('validationId')
         aid = spec.get('afterId')
         oid = spec.get('operationId')
         bid = spec.get('beforeId')
+        eid = spec.get('exceptionId')
         omode = spec.get('operationMode')
         try:
             validator = vid
             before = bid  # get_function_from_name(bid)
             handler = oid  # get_function_from_name(oid)
             after = aid  # get_function_from_name(aid)
+            excp = eid
         except Exception as e:
             print(e, type(e))
             print('handler dynamic load error')
             raise falcon.HTTPMissingParam('opid invalid')
         else:
             return handler, self.load_params(req, spec.get('parameters'), matched_uri, spec,
-                                             validator), before, after, omode
+                                             validator), before, after, excp, omode
 
     def load_params(self, req, params, matched_uri, spec, validator):
 
@@ -55,10 +53,6 @@ class OperatorLoader:
                     value = self.param_in_path(matched_uri, param)
                 elif in_ == 'body':
                     value = self.param_in_body(req, spec, param)
-                    # if type(value) == tuple or type(value) == list:
-                    #     if type(value[0]) == dict and type(value[1]) == str:
-                    #         self.custom_validate_all(validator, **value[0])
-                    #         return value[0]
                 else:
                     value = None
                 results[name] = value

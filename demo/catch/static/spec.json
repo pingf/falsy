@@ -30,6 +30,7 @@
                 ]
             },
             "post": {
+                "exceptionId": "demo.catch.ops.hello.post_excp",
                 "operationId": "demo.catch.ops.hello.post_it",
                 "parameters": [
                     {

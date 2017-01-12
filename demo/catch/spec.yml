@@ -24,6 +24,7 @@ paths:
     post:
       tags: [Method]
       operationId: demo.catch.ops.hello.post_it
+      exceptionId: demo.catch.ops.hello.post_excp
       summary: 测试post请求
       parameters:
         - name: name
