@@ -91,52 +91,54 @@ class SwaggerServer:
     def dispatch(self):
         op_loader = OperatorLoader()
         base_before, base_after, base_excp= op_loader.load_base(self.specs)
-        if base_before:
-            base_before(req=self.req, resp=self.resp)
-        for uri_regex, spec in self.specs.items():
-            try:
-                route_signature = '/' + self.req.method.lower() + self.req.relative_uri
-                if route_signature.find('?') > 0:
-                    route_signature = route_signature[:route_signature.find('?')]
-                if type(uri_regex) == str:
-                    continue
-                match = uri_regex.match(route_signature)
-                if match:
-                    handler, params, before, after, excp, mode = op_loader.load(req=self.req, spec=spec,
-                                                                          matched_uri=match)
-
-                    handler_return = None
-                    try:
-                        if before:
-                            before(req=self.req, resp=self.resp, **params)
-                        if mode == 'raw':
-                            handler_return = handler(req=self.req, resp=self.resp)
-                        elif mode == 'more':
-                            handler_return = handler(req=self.req, resp=self.resp, **params)
-                        else:
-                            handler_return = handler(**params)
-                        self.process_response(handler_return)
-                        if after:
-                            after(req=self.req, resp=self.resp, response=handler_return, **params)
-                        if base_after:
-                            base_after(req=self.req, resp=self.resp, response=handler_return)
-                    except Exception as e:
-                        if excp is None and base_excp is None:
-                            raise e
-                        if excp is not None:
-                            excp(req=self.req, resp=self.resp, error=e)
-                        if base_excp is not None:
-                            base_excp(req=self.req, resp=self.resp, error=e)
-                    return
-            except AttributeError as e:
-                print(e, 'catched')
-
-        if base_after:
-            base_after(req=self.req, resp=self.resp)
+        try:
+            if base_before:
+                base_before(req=self.req, resp=self.resp)
+            for uri_regex, spec in self.specs.items():
+                try:
+                    route_signature = '/' + self.req.method.lower() + self.req.relative_uri
+                    if route_signature.find('?') > 0:
+                        route_signature = route_signature[:route_signature.find('?')]
+                    if type(uri_regex) == str:
+                        continue
+                    match = uri_regex.match(route_signature)
+                    if match:
+                        handler, params, before, after, excp, mode = op_loader.load(req=self.req, spec=spec,
+                                                                              matched_uri=match)
+                        handler_return = None
+                        try:
+                            if before:
+                                before(req=self.req, resp=self.resp, **params)
+                            if mode == 'raw':
+                                handler_return = handler(req=self.req, resp=self.resp)
+                            elif mode == 'more':
+                                handler_return = handler(req=self.req, resp=self.resp, **params)
+                            else:
+                                handler_return = handler(**params)
+                            self.process_response(handler_return, mode)
+                            if after:
+                                after(req=self.req, resp=self.resp, response=handler_return, **params)
+                        except Exception as e:
+                            if excp is None:
+                                raise e
+                            if excp is not None:
+                                excp(req=self.req, resp=self.resp, error=e)
+                        return
+                except AttributeError as e:
+                    print(e, 'catched')
+            if base_after:
+                base_after(req=self.req, resp=self.resp)
+        except Exception as e:
+            if base_excp is None:
+                raise e
+            if base_excp is not None:
+                base_excp(req=self.req, resp=self.resp, error=e)
         log.info("Request URL does not match any route signature: {}".format(route_signature))
         raise falcon.HTTPNotFound()
 
-    def process_response(self, handler_return):
+    def process_response(self, handler_return, mode='normal'):
+        if mode == 'raw':
+            return
         content_type = 'text/plain'
         if handler_return is None:
             #when exceptions happend
