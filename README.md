@@ -2,7 +2,7 @@
 FAL.S.Y
 
 ### description
-  it's a api framework.
+  it's an api framework.
   using falcon, swagger, yaml together!
   
 ### license
