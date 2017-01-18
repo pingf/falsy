@@ -167,15 +167,14 @@ class SwaggerServer:
             except Exception as e:
                 pre_body = self.resp.body
             if type(pre_body) == dict:
-                if 'json' in content_type and type(data) == dict:
+                if 'json' in content_type:
                     pre_body.update(data)
                     self.resp.body = json.dumps(pre_body)
                 else:
                     self.resp.body = json.dumps(pre_body) + data
             else:
-                self.resp.body = pre_body + json.dumps(data) if 'json' in content_type and type(
-                    data) == dict else json.dumps(pre_body) + data
+                self.resp.body = pre_body + json.dumps(data) if 'json' in content_type else json.dumps(pre_body) + data
         else:
-            self.resp.body = json.dumps(data) if 'json' in content_type and type(data) == dict else data
+            self.resp.body = json.dumps(data) if 'json' in content_type else data
         self.resp.content_type = content_type
         self.resp.status = http_code
