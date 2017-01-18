@@ -144,37 +144,38 @@ class SwaggerServer:
             # when exceptions happend
             content_type = 'application/json'
             http_code = falcon.HTTP_500
-        if type(handler_return) == tuple:
-            data = handler_return[0]
-            http_code = handler_return[1]
-            if len(handler_return) > 2:
-                content_type = handler_return[2]
+        else:
+            if type(handler_return) == tuple:
+                data = handler_return[0]
+                http_code = handler_return[1]
+                if len(handler_return) > 2:
+                    content_type = handler_return[2]
+                else:
+                    if type(data) == dict or type(data) == list:
+                        content_type = 'application/json'
+                    # else:
+                    #     content_type = 'text/plain'
             else:
+                data = handler_return
+                http_code = falcon.HTTP_200
                 if type(data) == dict or type(data) == list:
                     content_type = 'application/json'
                 # else:
                 #     content_type = 'text/plain'
-        else:
-            data = handler_return
-            http_code = falcon.HTTP_200
-            if type(data) == dict or type(data) == list:
-                content_type = 'application/json'
-            # else:
-            #     content_type = 'text/plain'
-        if self.resp.body:
-            try:
-                pre_body = json.loads(self.resp.body)
-            except Exception as e:
-                pre_body = self.resp.body
-            if type(pre_body) == dict:
-                if 'json' in content_type:
-                    pre_body.update(data)
-                    self.resp.body = json.dumps(pre_body)
+            if self.resp.body:
+                try:
+                    pre_body = json.loads(self.resp.body)
+                except Exception as e:
+                    pre_body = self.resp.body
+                if type(pre_body) == dict:
+                    if 'json' in content_type:
+                        pre_body.update(data)
+                        self.resp.body = json.dumps(pre_body)
+                    else:
+                        self.resp.body = json.dumps(pre_body) + data
                 else:
-                    self.resp.body = json.dumps(pre_body) + data
+                    self.resp.body = pre_body + json.dumps(data) if 'json' in content_type else json.dumps(pre_body) + data
             else:
-                self.resp.body = pre_body + json.dumps(data) if 'json' in content_type else json.dumps(pre_body) + data
-        else:
-            self.resp.body = json.dumps(data) if 'json' in content_type else data
+                self.resp.body = json.dumps(data) if 'json' in content_type else data
         self.resp.content_type = content_type
         self.resp.status = http_code
