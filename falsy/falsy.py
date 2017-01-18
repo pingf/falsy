@@ -14,20 +14,17 @@ from falsy.swagger_proxy.swagger_server import SwaggerServer
 class FALSY:
     def __init__(self, falcon_api=None,
                  static_path='static', static_dir=None):
-        self.api = self.falcon_api = falcon_api or falcon.API()
+        self.falcon_api = falcon_api or falcon.API()
         self.static_path = static_path.strip('/')
-        self.server = None
-        self.api_prefix = r'/'
-        if static_dir:
-            self.static_dir = static_dir if os.path.isdir(static_dir) else '.'
-            self.api = CommonStaticMiddleware(self.api, static_dir=self.static_dir,
-                                              url_prefix=self.static_path)
+        self.static_dir = static_dir if os.path.isdir(static_dir) else '.'
 
-    def begin_api(self, api_prefix=None, errors=None):
-        self.api_prefix = api_prefix or self.api_prefix
-        self.server = SwaggerServer(errors=errors)
+        self.api = CommonStaticMiddleware(self.falcon_api, static_dir=self.static_dir,
+                                          url_prefix=self.static_path)
 
-    def swagger(self, filename, ui=False, new_file=None, ui_language='en', theme='normal'):
+
+    def swagger(self, filename, ui=False, new_file=None, ui_language='en', theme='normal', errors=None):
+        server = SwaggerServer(errors=errors)
+
         swagger_file = filename.split('/')[-1] if filename.find('/') > 0 else filename
         if swagger_file.endswith('yml') or swagger_file.endswith('yaml'):
             new_file = new_file or swagger_file
@@ -36,7 +33,7 @@ class FALSY:
             new_path = self.static_dir + '/' + new_file
             with open(filename, 'r') as f:
                 config = yaml.load(f, Loader)
-                self.server.load_specs(config)
+                server.load_specs(config)
                 with open(new_path, 'w') as fw:
                     config = self.remove_error_info(config)
                     json.dump(config, fw, sort_keys=True, indent=4)
@@ -45,23 +42,24 @@ class FALSY:
             new_path = self.static_dir + '/' + new_file
             with open(filename, 'r') as fr:
                 config = fr.read()
-                self.server.load_specs(config)
+                server.load_specs(config)
                 with open(new_path, 'w') as fw:
                     config = self.remove_error_info(config)
                     json.dump(config, fw, sort_keys=True, indent=4)
+        path = server.basePath
+        path = path.lstrip('/') if path else 'v0'
+        self.falcon_api.add_sink(server, '/'+path)
         if ui:
-            path = self.server.basePath
-            if path:
-                path=path.lstrip('/')
-            else:
-                path='v0'
             self.api = SwaggerUIStaticMiddleware(self.api, swagger_file=self.static_path + '/' + new_file,
-                                                 url_prefix=path, language = ui_language, theme=theme)
+                                                 url_prefix=path, language=ui_language, theme=theme)
 
+    # deprecated
+    def begin_api(self, api_prefix=None, errors=None):
+        pass
+
+    # deprecated
     def end_api(self):
-        self.falcon_api.add_sink(self.server, self.api_prefix)
-
-
+        pass
 
     def remove_error_info(self, d):
         if not isinstance(d, (dict, list)):
@@ -69,4 +67,4 @@ class FALSY:
         if isinstance(d, list):
             return [self.remove_error_info(v) for v in d]
         return {k: self.remove_error_info(v) for k, v in d.items()
-                if k not in {'validationId', 'beforeId', 'afterId'}}
+                if k not in {'validationId', 'beforeId', 'afterId', 'exceptionId', 'operationId', 'operationMode'}}

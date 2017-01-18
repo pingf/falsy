@@ -11,7 +11,6 @@
         "/hello": {
             "get": {
                 "description": "name\u9700\u8981\u5927\u4e8e\u7b49\u4e8e6\u5b57\u7b26",
-                "operationId": "demo.valid.ops.hello.get_it",
                 "parameters": [
                     {
                         "default": "john",
@@ -32,7 +31,6 @@
                 ]
             },
             "post": {
-                "operationId": "demo.valid.ops.hello.post_it",
                 "parameters": [
                     {
                         "in": "body",
@@ -63,7 +61,6 @@
         "/hello_2": {
             "get": {
                 "description": "name\u9700\u8981\u5927\u4e8e\u7b49\u4e8e6\u5b57\u7b26",
-                "operationId": "demo.valid.ops.hello.get_it2",
                 "parameters": [
                     {
                         "default": "john",
@@ -94,7 +91,6 @@
         "/hello_in_path/{name}": {
             "get": {
                 "description": "name\u9700\u8981\u5927\u4e8e\u7b49\u4e8e6\u5b57\u7b26",
-                "operationId": "demo.valid.ops.hello.get_it",
                 "parameters": [
                     {
                         "default": "john",
@@ -118,7 +114,6 @@
         "/hello_in_query": {
             "get": {
                 "description": "name\u9700\u8981\u5927\u4e8e\u7b49\u4e8e6\u5b57\u7b26",
-                "operationId": "demo.valid.ops.hello.get_it",
                 "parameters": [
                     {
                         "default": "john",
@@ -141,7 +136,6 @@
         },
         "/hello_required": {
             "get": {
-                "operationId": "demo.valid.ops.hello.get_it_required",
                 "parameters": [
                     {
                         "default": "john",
@@ -164,7 +158,6 @@
         },
         "/hello_required_backend": {
             "get": {
-                "operationId": "demo.valid.ops.hello.get_it_required",
                 "parameters": [
                     {
                         "default": "john",

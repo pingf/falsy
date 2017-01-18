@@ -1,12 +1,15 @@
 # falsy
+
 FAL.S.Y
 
 ### description
-  it's an api framework.
-  using falcon, swagger, yaml together!
+
+    it's an api framework.
+    using falcon, swagger, yaml together!
   
 ### license
-  MIT and Apache v2
+
+    MIT and Apache v2
   
 ### showtime
 
@@ -14,31 +17,38 @@ FAL.S.Y
 
 
 ### how to install it
-  `pip install falsy`
+
+    `pip install falsy`
   
 ### how to use it
+
+0. create the dir for static
+
+    `mkdir static`
+
 1. writting the server code(main.py)
-  ```python
+
+    ```python
     from falsy.falsy import FALSY
 
     f = FALSY(static_path='test', static_dir='static')   #you need create the dir called static before you run
-    f.begin_api()
-    f.swagger('test.yml', ui=True,theme='impress') #impress theme is the responsive swagger ui, or you can use 'normal' here
-    f.end_api()
+    f.swagger('test.yml', ui=True, theme='impress') #impress theme is the responsive swagger ui, or you can use 'normal' here
     api = f.api
-  ```
+    ```
+
 2. writting the yml file
-  ```
-  swagger: '2.0'
-  info:
+
+    ```
+    swagger: '2.0'
+    info:
     title: FALSY SIMPLE DEMO API
     version: "0.1"
-  consumes:
+    consumes:
     - application/json
-  produces:
+    produces:
     - application/json
-  basePath: "/v1"
-  paths:
+    basePath: "/v1"
+    paths:
     '/hello':
       get:
         tags: [Method]
@@ -52,22 +62,25 @@ FAL.S.Y
         responses:
           200:
             description: Return response
-  ```
+    ```
   
 3. writting the operation handler(demo.py)
-  ```python
-  def get_it(name):
-    return {
-        'name': name
-    }
-  ```
+
+    ```python
+    def get_it(name):
+        return {
+            'get': name
+        }
+    ```
   
 4. run it
-  `gunicorn -b 0.0.0.0:8001 main:api --reload -w 1 --threads 1`
+
+    `gunicorn -b 0.0.0.0:8001 main:api --reload -w 1 --threads 1`
   
 5. visit the ui page
-  `http://0.0.0.0:8001/v1/ui/`
-  make sure it ends with '/'
+
+    `http://0.0.0.0:8001/v1/ui/`
+    make sure it ends with '/'
   
 ### video demo
 

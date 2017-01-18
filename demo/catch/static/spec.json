@@ -10,7 +10,6 @@
     "paths": {
         "/hello": {
             "get": {
-                "operationId": "demo.catch.ops.hello.get_it",
                 "parameters": [
                     {
                         "default": "john",
@@ -30,8 +29,6 @@
                 ]
             },
             "post": {
-                "exceptionId": "demo.catch.ops.hello.post_excp",
-                "operationId": "demo.catch.ops.hello.post_it",
                 "parameters": [
                     {
                         "default": "john",

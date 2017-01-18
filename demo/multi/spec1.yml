@@ -1,0 +1,23 @@
+swagger: '2.0'
+info:
+  title: FALSY SIMPLE DEMO API v1
+  version: "0.2"
+consumes:
+  - application/json
+produces:
+  - application/json
+basePath: "/v1/raw"
+paths:
+  '/hello':
+    get:
+      tags: [Method]
+      operationId: demo.multi.ops.hello.get_it1
+      summary: 测试get请求
+      parameters:
+        - name: name
+          in: query
+          type: string
+          default: 'john'
+      responses:
+        200:
+          description: Return response

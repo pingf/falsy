@@ -13,7 +13,5 @@ def handle_custom(req, resp, e):
 
 
 f = FALSY(static_path='test', static_dir='demo/catch/static')
-f.begin_api(errors= {CustomException: handle_custom})
-f.swagger('demo/catch/spec.yml', ui=True, theme='responsive')
-f.end_api()
+f.swagger('demo/catch/spec.yml', ui=True, theme='responsive',errors= {CustomException: handle_custom})
 api = f.api
