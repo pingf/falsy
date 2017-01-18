@@ -4,12 +4,23 @@ import os
 import falcon
 from jinja2 import Template
 
+class CommonWSGIMiddleware(object):
+    def __init__(self, falcon_api, app, url_prefix='wsgi'):
+        self.falcon_api = falcon_api
+        self.app = app
+        self.url_prefix = url_prefix.lstrip('/')
+
+    def __call__(self, environ, start_response):
+        raw_uri = environ.get('RAW_URI')
+        if raw_uri and raw_uri.startswith('/' + self.url_prefix):
+            return self.app(environ, start_response)
+        return self.falcon_api(environ, start_response)
 
 class CommonStaticMiddleware(object):
     def __init__(self, app, static_dir='dist', url_prefix='static'):
         self.app = app
         self.static_dir = static_dir
-        self.url_prefix = url_prefix
+        self.url_prefix = url_prefix.lstrip('/')
         self.path_dir = os.path.abspath(static_dir)
 
     def __call__(self, environ, start_response):
@@ -64,7 +75,7 @@ class SwaggerUIStaticMiddleware(object):
     def __init__(self, app, swagger_file='swagger.json', url_prefix='v1', language='en', theme='normal'):
         self.app = app
         self.static_dir = 'vendors/dist_impress' if theme == 'responsive' or theme == 'impress' else 'vendors/dist_normal'
-        self.url_prefix = url_prefix
+        self.url_prefix = url_prefix.lstrip('/')
         self.path_dir = os.path.abspath(
             os.path.join(
                 os.path.dirname(__file__),

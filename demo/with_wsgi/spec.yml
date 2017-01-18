@@ -1,0 +1,24 @@
+swagger: '2.0'
+info:
+  title: FALSY SIMPLE DEMO API v1
+  version: "0.3"
+consumes:
+  - application/json
+produces:
+  - application/json
+basePath: "/v1"
+enableCookies: true
+paths:
+  '/hello':
+    get:
+      tags: [Method]
+      operationId: demo.with_wsgi.ops.hello.get_it
+      summary: 测试get请求
+      parameters:
+        - name: name
+          in: query
+          type: string
+          default: 'jesse'
+      responses:
+        200:
+          description: Return response

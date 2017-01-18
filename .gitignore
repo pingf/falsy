@@ -11,3 +11,4 @@ build/*
 *.egg*
 ChangeLog
 AUTHORS
+.python-version

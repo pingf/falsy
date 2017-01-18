@@ -7,19 +7,23 @@ import shutil
 
 import yaml
 from falsy.loader.yaml import Loader
-from falsy.swagger_proxy.middleware import SwaggerUIStaticMiddleware, CommonStaticMiddleware
+from falsy.swagger_proxy.middleware import SwaggerUIStaticMiddleware, CommonStaticMiddleware, CommonWSGIMiddleware
 from falsy.swagger_proxy.swagger_server import SwaggerServer
 
 
 class FALSY:
     def __init__(self, falcon_api=None,
                  static_path='static', static_dir=None):
-        self.falcon_api = falcon_api or falcon.API()
+        self.api = self.falcon_api = falcon_api or falcon.API()
         self.static_path = static_path.strip('/')
         self.static_dir = static_dir if os.path.isdir(static_dir) else '.'
 
         self.api = CommonStaticMiddleware(self.falcon_api, static_dir=self.static_dir,
                                           url_prefix=self.static_path)
+
+    def wsgi(self, app, url_prefix='/wsgi'):
+        self.api = CommonWSGIMiddleware(self.api, app, url_prefix=url_prefix)
+        return self
 
 
     def swagger(self, filename, ui=False, new_file=None, ui_language='en', theme='normal', errors=None):
@@ -52,6 +56,7 @@ class FALSY:
         if ui:
             self.api = SwaggerUIStaticMiddleware(self.api, swagger_file=self.static_path + '/' + new_file,
                                                  url_prefix=path, language=ui_language, theme=theme)
+        return self
 
     # deprecated
     def begin_api(self, api_prefix=None, errors=None):
