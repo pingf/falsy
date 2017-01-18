@@ -90,7 +90,7 @@ class SwaggerServer:
 
     def dispatch(self):
         op_loader = OperatorLoader()
-        base_before, base_after, base_excp= op_loader.load_base(self.specs)
+        base_before, base_after, base_excp = op_loader.load_base(self.specs)
         try:
             if base_before:
                 base_before(req=self.req, resp=self.resp)
@@ -104,7 +104,7 @@ class SwaggerServer:
                     match = uri_regex.match(route_signature)
                     if match:
                         handler, params, before, after, excp, mode = op_loader.load(req=self.req, spec=spec,
-                                                                              matched_uri=match)
+                                                                                    matched_uri=match)
                         handler_return = None
                         try:
                             if before:
@@ -141,25 +141,26 @@ class SwaggerServer:
             return
         content_type = 'text/plain'
         if handler_return is None:
-            #when exceptions happend
+            # when exceptions happend
             content_type = 'application/json'
             http_code = falcon.HTTP_500
-        if type(handler_return) == tuple or type(handler_return) == list:
+        if type(handler_return) == tuple:
             data = handler_return[0]
-            if type(data) == dict:
-                content_type = 'application/json'
-            elif type(data) == str:
-                content_type = 'text/html'
-            http_code = handler_return[1] if len(handler_return) > 1 else falcon.HTTP_200
+            http_code = handler_return[1]
             if len(handler_return) > 2:
                 content_type = handler_return[2]
+            else:
+                if type(data) == dict or type(data) == list:
+                    content_type = 'application/json'
+                # else:
+                #     content_type = 'text/plain'
         else:
             data = handler_return
             http_code = falcon.HTTP_200
-            if type(data) == dict:
+            if type(data) == dict or type(data) == list:
                 content_type = 'application/json'
-            elif type(data) == str:
-                content_type = 'text/html'
+            # else:
+            #     content_type = 'text/plain'
         if self.resp.body:
             try:
                 pre_body = json.loads(self.resp.body)
