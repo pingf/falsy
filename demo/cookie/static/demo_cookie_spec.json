@@ -1,0 +1,44 @@
+{
+    "basePath": "/v1",
+    "consumes": [
+        "application/json"
+    ],
+    "enableCookies": true,
+    "info": {
+        "title": "FALSY SIMPLE DEMO API v1",
+        "version": "0.2"
+    },
+    "paths": {
+        "/hello": {
+            "get": {
+                "parameters": [
+                    {
+                        "default": "john",
+                        "in": "header",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "default": "123",
+                        "in": "header",
+                        "name": "id",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return response"
+                    }
+                },
+                "summary": "\u6d4b\u8bd5get\u8bf7\u6c42",
+                "tags": [
+                    "Method"
+                ]
+            }
+        }
+    },
+    "produces": [
+        "application/json"
+    ],
+    "swagger": "2.0"
+}

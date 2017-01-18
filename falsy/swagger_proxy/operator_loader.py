@@ -53,6 +53,8 @@ class OperatorLoader:
                     value = self.param_in_path(matched_uri, param)
                 elif in_ == 'body':
                     value = self.param_in_body(req, spec, param)
+                elif in_ == 'header':
+                    value = self.param_in_header(req, spec, param)
                 else:
                     value = None
                 results[name] = value
@@ -111,7 +113,7 @@ class OperatorLoader:
         validated = None
         try:
             if validator:
-                validated = validator(**kwargs) if len(kwargs)>0 else validator(**kwargs)
+                validated = validator(**kwargs) if len(kwargs) > 0 else validator(**kwargs)
         except Exception as e:
             raise falcon.HTTPInvalidParam('invalid param in query(custom validation exception), value:', str(kwargs))
 
@@ -144,6 +146,45 @@ class OperatorLoader:
         vid = param.get('validationId')
         self.custom_validate(vid, value)
         return value
+
+    def param_in_header(self, req, spec, param):
+        headers = req.headers
+        name = param.get('name').upper().replace('_', '-')
+        type_ = param.get('type')
+        value = headers.get(name)
+
+        if param.get('required') and value is None:
+            raise falcon.HTTPMissingParam(name)
+
+        default_func = lambda v: v if type_ is not None else None
+
+        def array_check(value):
+            doc = json.loads(value)
+            return doc
+
+        def object_check(value):
+            doc = json.loads(value)
+            return doc
+
+        check_funcs = {
+            'string': lambda v: str(v),
+            'integer': lambda v: int(v),
+            'float': lambda v: float(v),
+            'array': array_check,
+            'object': object_check,
+        }
+
+        try:
+            value = check_funcs.get(type_, default_func)(value)
+        except ValueError as e:
+            raise falcon.HTTPInvalidParam('invalid param in header', name+':'+value)
+        if param.get('required') and value is None:
+            raise falcon.HTTPMissingParam(name)
+
+        vid = param.get('validationId')
+        self.custom_validate(vid, value)
+        return value
+
 
     def param_in_body(self, req, spec, param):
         body = req.stream.read().decode('utf-8')
