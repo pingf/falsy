@@ -25,7 +25,8 @@ class FALSY:
     def swagger(self, filename, ui=False, new_file=None, ui_language='en', theme='normal', errors=None):
         server = SwaggerServer(errors=errors)
 
-        swagger_file = filename.split('/')[-1] if filename.find('/') > 0 else filename
+        # swagger_file = filename.split('/')[-1] if filename.find('/') > 0 else filename
+        swagger_file = filename.replace('/', '_')
         if swagger_file.endswith('yml') or swagger_file.endswith('yaml'):
             new_file = new_file or swagger_file
             new_file = new_file.replace('.yaml', '.json')

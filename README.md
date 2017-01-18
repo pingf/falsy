@@ -18,7 +18,7 @@ FAL.S.Y
 
 ### how to install it
 
-    `pip install falsy`
+`pip install falsy`
   
 ### how to use it
 
