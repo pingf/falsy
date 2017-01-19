@@ -25,19 +25,13 @@ class OperatorLoader:
         bid = spec.get('beforeId')
         eid = spec.get('exceptionId')
         omode = spec.get('operationMode')
-        try:
-            validator = vid
-            before = bid  # get_function_from_name(bid)
-            handler = oid  # get_function_from_name(oid)
-            after = aid  # get_function_from_name(aid)
-            excp = eid
-        except Exception as e:
-            print(e, type(e))
-            print('handler dynamic load error')
-            raise falcon.HTTPMissingParam('opid invalid')
-        else:
-            return handler, self.load_params(req, spec.get('parameters'), matched_uri, spec,
-                                             validator), before, after, excp, omode
+        validator = vid
+        before = bid  # get_function_from_name(bid)
+        handler = oid  # get_function_from_name(oid)
+        after = aid  # get_function_from_name(aid)
+        excp = eid
+        return handler, self.load_params(req, spec.get('parameters'), matched_uri, spec,
+                                         validator), before, after, excp, omode
 
     def load_params(self, req, params, matched_uri, spec, validator):
 
@@ -57,6 +51,8 @@ class OperatorLoader:
                     value = self.param_in_header(req, spec, param)
                 else:
                     value = None
+                vid = param.get('validationId')
+                self.custom_validate(vid, value)
                 results[name] = value
             if len(results) == 0:
                 self.custom_validate_all(validator)
@@ -84,9 +80,6 @@ class OperatorLoader:
             raise falcon.HTTPInvalidParam('invalid param in query', name)
         if param.get('required') and value is None:
             raise falcon.HTTPMissingParam(name)
-
-        vid = param.get('validationId')
-        self.custom_validate(vid, value)
         return value
 
     def custom_validate(self, vid, value):
@@ -143,8 +136,6 @@ class OperatorLoader:
             value = check_funcs.get(type_, default_func)(value)
         except ValueError as e:
             raise falcon.HTTPInvalidParam('invalid param in path', name)
-        vid = param.get('validationId')
-        self.custom_validate(vid, value)
         return value
 
     def param_in_header(self, req, spec, param):
@@ -180,9 +171,6 @@ class OperatorLoader:
             raise falcon.HTTPInvalidParam('invalid param in header', name+':'+value)
         if param.get('required') and value is None:
             raise falcon.HTTPMissingParam(name)
-
-        vid = param.get('validationId')
-        self.custom_validate(vid, value)
         return value
 
 
@@ -216,6 +204,4 @@ class OperatorLoader:
             value = check_funcs.get(type_, default_func)(value)
         except ValueError as e:
             raise falcon.HTTPInvalidParam('invalid param in path', name)
-        vid = param.get('validationId')
-        self.custom_validate(vid, value)
         return value

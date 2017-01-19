@@ -45,15 +45,12 @@ class SpecLoader:
         for attribute, attribute_content in method_content.items():
             if attribute in ['beforeId', 'afterId', 'operationId', 'validationId', 'exceptionId']:
                 attribute_content = self.load_handler(attribute_content)
-            # attribute['beforeId'] = self.load_handler(attribute.get('beforeId'))
-            # attribute['afterId'] = self.load_handler(attribute.get('afterId'))
-            # attribute['operationId'] = self.load_handler(attribute.get('operationId'))
             self.load_attributes(attribute, attribute_content, swagger_spec, uri_regex)
 
     def load_attributes(self, attribute, attribute_content, swagger_spec, uri_regex):
         self.specs[uri_regex][attribute] = attribute_content
         if attribute == 'parameters':
-            for i,param in enumerate(attribute_content):
+            for i, param in enumerate(attribute_content):
                 if param.get('in') == 'body':
                     schema = param.get('schema')
                     ref = schema.get('$ref')

@@ -13,7 +13,7 @@ from falsy.swagger_proxy.swagger_server import SwaggerServer
 
 class FALSY:
     def __init__(self, falcon_api=None,
-                 static_path='static', static_dir=None):
+                 static_path='static', static_dir='static'):
         self.api = self.falcon_api = falcon_api or falcon.API()
         self.static_path = static_path.strip('/')
         self.static_dir = static_dir if os.path.isdir(static_dir) else '.'

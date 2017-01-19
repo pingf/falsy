@@ -11,14 +11,6 @@
     "paths": {
         "/hello": {
             "get": {
-                "parameters": [
-                    {
-                        "default": "jesse",
-                        "in": "query",
-                        "name": "name",
-                        "type": "string"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Return response"

@@ -14,11 +14,6 @@ paths:
       tags: [Method]
       operationId: demo.with_wsgi.ops.hello.get_it
       summary: 测试get请求
-      parameters:
-        - name: name
-          in: query
-          type: string
-          default: 'jesse'
       responses:
         200:
           description: Return response
