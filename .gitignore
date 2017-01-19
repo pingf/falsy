@@ -12,3 +12,4 @@ build/*
 ChangeLog
 AUTHORS
 .python-version
+**/*.log
