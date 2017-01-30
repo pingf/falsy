@@ -1,9 +1,14 @@
+import json
 import logging.config
 import logging
 
 import datetime
 
 import collections
+from random import choice
+
+from colorlog import ColoredFormatter
+from falsy.jlog.filter import MyFilter
 
 from falsy.termcc.termcc import red
 
@@ -104,9 +109,9 @@ def parse_colors(sequence):
 
 
 def parse_colors(sequence):
-    print('>>>>>>>>1',sequence)
-    a=''.join(escape_codes[n] for n in sequence.split(',') if n)
-    print('>>>>>>>>2')
+    print('>>>>>>>>1', repr(sequence))
+    a = ''.join(escape_codes[n] for n in sequence.split(',') if n)
+    print('>>>>>>>>2', repr(a))
     return a
 
 
@@ -148,12 +153,49 @@ class ColoredFormatter1(logging.Formatter):
         #         color = self.color(log_colors, record.levelname)
         #         setattr(record, name + '_log_color', color)
 
+        print(dir(record))
         message = super(ColoredFormatter1, self).format(record)
 
         if self.reset and not message.endswith(escape_codes['reset']):
             message += escape_codes['reset']
+        print('0000', message)
 
         return message
+
+
+class ContextFilter(logging.Filter):
+    """
+    This is a filter which injects contextual information into the log.
+
+    Rather than use actual contextual information, we just use random
+    data in this demo.
+    """
+
+    USERS = ['jim', 'fred', 'sheila']
+    IPS = ['123.231.231.123', '127.0.0.1', '192.168.0.1']
+
+    def filter(self, record):
+        record.ip = choice(ContextFilter.IPS)
+        record.user = choice(ContextFilter.USERS)
+        return True
+
+
+class MyFilter(logging.Filter):
+    def __init__(self, param=None):
+        print('???????')
+        self.param = param
+
+    def filter(self, record):
+        if 'hehe' in record.msg:
+            record.msg = '!!!!: ' + record.msg
+        # print('???????2')
+        # if self.param is None:
+        #     allow = True
+        # else:
+        #     allow = self.param not in record.msg
+        # if allow:
+        #     record.msg = 'changed: ' + record.msg
+        return True
 
 
 LOG_CONFIG = {
@@ -165,9 +207,9 @@ LOG_CONFIG = {
             'datefmt': '%Y-%m-%d %H:%M:%S %Z%z'
         },
         'colored': {
-            '()': 'falsy.jlog.ColoredFormatter1',
-            'format': '[%(asctime)s.%(msecs)03d] - [%(levelname)-8s] - [%(name)-16s] - [%(message)s]',
-            # 'format': '[%(blue)s%(asctime)s.%(msecs)03d%(reset)s] - [%(log_color)s%(levelname)-8s%(reset)s] - [%(purple)s%(name)-16s%(reset)s] - [%(cyan)s%(message)s%(reset)s]',
+            '()': 'colorlog.ColoredFormatter',
+            # 'format': '[%(asctime)s.%(msecs)03d] - [%(levelname)-8s] - [%(name)-16s] - [%(message)s]',
+            'format': '[%(yellow,bg_cyan,bold)s%(asctime)s.%(msecs)03d%(reset)s] - [%(log_color)s%(levelname)-8s%(reset)s] - [%(purple)s%(name)-16s%(reset)s] - \n[%(cyan)s%(message)s%(reset)s]',
             'datefmt': '%Y-%m-%d %H:%M:%S %Z%z',
         },
 
@@ -177,6 +219,12 @@ LOG_CONFIG = {
             'WARNING': 'bold_yellow',
             'ERROR': 'bold_red',
             'CRITICAL': 'red,bg_white'
+        }
+    },
+    'filters': {
+        'myfilter': {
+            '()': MyFilter,
+            'param': 'noshow',
         }
     },
     'handlers': {
@@ -189,7 +237,7 @@ LOG_CONFIG = {
         },
         'console': {
             'level': 'DEBUG',
-            'filters': None,
+            'filters': ['myfilter'],
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stdout',
             'formatter': 'colored'

@@ -110,6 +110,7 @@ TERMCC_COLOR_TABLE = {
 TERMCC_TEXT_COLOR_BASE = 30
 TERMCC_BACK_COLOR_BASE = 40
 
+TERMCC_NORMAL = 1
 TERMCC_BOLD = 1
 TERMCC_FAINT = 2
 TERMCC_ITALIC = 3
@@ -131,6 +132,8 @@ def _text_color(color):
 def _back_color(color):
     return _wrap(TERMCC_BACK_COLOR_BASE + TERMCC_COLOR_TABLE[color])
 
+def normal(text):
+    return _wrap(TERMCC_NORMAL) + text + _reset()
 
 def bold(text):
     return _wrap(TERMCC_BOLD) + text + _reset()

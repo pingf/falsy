@@ -5,6 +5,7 @@ import falcon
 import json
 import logging
 
+from falsy.jlog.jlog import JLog
 from falsy.swagger_proxy.operator_loader import OperatorLoader
 from falsy.swagger_proxy.spec_loader import SpecLoader
 
@@ -37,21 +38,22 @@ def http_invalid_param_handler(req, resp, e):
 
 
 class SwaggerServer:
-    def __init__(self, errors=None):
+    def __init__(self, errors=None, log=None):
         self.default_content_type = 'application/json'
         self.specs = {}  # Meta()
         self.custom_error_map = errors
         self.op_loader = OperatorLoader()
+        self.log = log
 
     def __call__(self, req, resp):  # , **kwargs):
         # log.info(dir(req))
-        log.info(req.remote_addr)
+        self.log.info(req.remote_addr)
         # self.req = req
         # self.resp = resp
         self.process(req, resp)
 
     def load_specs(self, swagger_spec):
-        self.specs = SpecLoader().load_specs(swagger_spec)
+        self.specs = SpecLoader(log=self.log).load_specs(swagger_spec)
         self.basePath = self.specs['basePath']
 
     def process(self, req, resp):

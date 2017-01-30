@@ -13,14 +13,16 @@ log = logging.getLogger(__name__)
 
 
 class SpecLoader:
-    def __init__(self):
+    def __init__(self, log=None):
         self.specs = {}
+        self.log = log
 
     def load_specs(self, swagger_spec):
-        log.info("Loading swagger spec into routing table")
+        self.log.debug("Loading swagger spec into routing table")
         try:
             swagger_spec = json.loads(swagger_spec) if type(swagger_spec) == str else swagger_spec
         except:
+            self.log.error_trace("Unable to parse the Swagger spec JSON document.")
             raise Exception("Unable to parse the Swagger spec JSON document.")
         try:
             self.specs['basePath'] = swagger_spec.get('basePath')

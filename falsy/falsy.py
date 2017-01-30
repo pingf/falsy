@@ -1,11 +1,12 @@
 import json
 import os
-import pprint
+# import pprint
 
 import falcon
-import shutil
+# import shutil
 
 import yaml
+from falsy.jlog.jlog import JLog
 from falsy.loader.yaml import Loader
 from falsy.swagger_proxy.middleware import SwaggerUIStaticMiddleware, CommonStaticMiddleware, CommonWSGIMiddleware
 from falsy.swagger_proxy.swagger_server import SwaggerServer
@@ -14,20 +15,23 @@ from falsy.swagger_proxy.swagger_server import SwaggerServer
 class FALSY:
     def __init__(self, falcon_api=None,
                  static_path='static', static_dir='static'):
+        self.log = JLog(hightable=['swagger']).setup()
+        self.log.info('swagger')
+
         self.api = self.falcon_api = falcon_api or falcon.API()
         self.static_path = static_path.strip('/')
         self.static_dir = static_dir if os.path.isdir(static_dir) else '.'
 
         self.api = CommonStaticMiddleware(self.falcon_api, static_dir=self.static_dir,
-                                          url_prefix=self.static_path)
+                                          url_prefix=self.static_path, log=self.log)
 
     def wsgi(self, app, url_prefix='/wsgi'):
-        self.api = CommonWSGIMiddleware(self.api, app, url_prefix=url_prefix)
+        self.api = CommonWSGIMiddleware(self.api, app, url_prefix=url_prefix, log=self.log)
         return self
 
 
     def swagger(self, filename, ui=False, new_file=None, ui_language='en', theme='normal', errors=None):
-        server = SwaggerServer(errors=errors)
+        server = SwaggerServer(errors=errors, log=self.log)
 
         swagger_file = filename.replace('/', '_')
         if swagger_file.endswith('yml') or swagger_file.endswith('yaml'):
