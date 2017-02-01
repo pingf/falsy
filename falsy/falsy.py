@@ -14,9 +14,9 @@ from falsy.swagger_proxy.swagger_server import SwaggerServer
 
 class FALSY:
     def __init__(self, falcon_api=None,
-                 static_path='static', static_dir='static'):
-        self.log = JLog(hightable=['swagger']).setup()
-        self.log.info('swagger')
+                 static_path='static', static_dir='static', high_log=None):
+        self.log = JLog(hightable=high_log).setup()
+        self.log.info('falsy init')
 
         self.api = self.falcon_api = falcon_api or falcon.API()
         self.static_path = static_path.strip('/')
@@ -24,14 +24,17 @@ class FALSY:
 
         self.api = CommonStaticMiddleware(self.falcon_api, static_dir=self.static_dir,
                                           url_prefix=self.static_path, log=self.log)
+        self.log.info('common static middleware loaded\n\t\t\turl_prefix(static_path):%s, static_dir:%s'%(self.static_path, self.static_dir))
 
     def wsgi(self, app, url_prefix='/wsgi'):
         self.api = CommonWSGIMiddleware(self.api, app, url_prefix=url_prefix, log=self.log)
+        self.log.info('common wsgi middleware loaded\n\t\t\turl_prefix:%s'%(self.static_path))
         return self
 
 
     def swagger(self, filename, ui=False, new_file=None, ui_language='en', theme='normal', errors=None):
         server = SwaggerServer(errors=errors, log=self.log)
+        self.log.info('swagger server init')
 
         swagger_file = filename.replace('/', '_')
         if swagger_file.endswith('yml') or swagger_file.endswith('yaml'):
@@ -45,6 +48,7 @@ class FALSY:
                 with open(new_path, 'w') as fw:
                     config = self.remove_error_info(config)
                     json.dump(config, fw, sort_keys=True, indent=4)
+            self.log.info('swagger file generated(from yaml file)')
         else:
             new_file = new_file or swagger_file
             new_path = self.static_dir + '/' + new_file
@@ -54,12 +58,14 @@ class FALSY:
                 with open(new_path, 'w') as fw:
                     config = self.remove_error_info(config)
                     json.dump(config, fw, sort_keys=True, indent=4)
+            self.log.info('swagger file generated(from json file)')
         path = server.basePath
         path = path.lstrip('/') if path else 'v0'
         self.falcon_api.add_sink(server, '/'+path)
         if ui:
             self.api = SwaggerUIStaticMiddleware(self.api, swagger_file=self.static_path + '/' + new_file,
                                                  url_prefix=path, language=ui_language, theme=theme)
+            self.log.info('swagger ui static middleware loaded\n\t\t\turl_prefix(static_path):%s'%(self.static_path))
         return self
 
     # deprecated
