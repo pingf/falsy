@@ -100,8 +100,8 @@
 TERMCC_PREFIX = '\033['
 TERMCC_SUFFIX = 'm'
 
-TERMCC_COLOR = '38;5;'
-TERMCC_RESET_COLOR = '39;5;'
+TERMCC_FORE = '38;5;'
+TERMCC_RESET_FORE = '39;5;'
 TERMCC_BACK = '48;5;'
 TERMCC_RESET_BACK = '49;5;'
 TERMCC_STYLE = ''
@@ -109,10 +109,10 @@ TERMCC_RESET_STYLE = ''
 
 TERMCC_RESET_ALL = '0'
 TERMCC_RESET_ALL_STYLE = '20'
-TERMCC_RESET_ALL_COLOR = '39'
+TERMCC_RESET_ALL_FORE = '39'
 TERMCC_RESET_ALL_BACK = '49'
 
-TERMCC_COLOR_TABLE = TERMCC_BACK_TABLE = {
+TERMCC_FORE_TABLE = TERMCC_BACK_TABLE = {
     'black': 0,
     'red': 1,
     'green': 2,
@@ -121,14 +121,14 @@ TERMCC_COLOR_TABLE = TERMCC_BACK_TABLE = {
     'magenta': 5,
     'cyan': 6,
     'lightgray': 7,
-    'darkgray': 60,
-    'lightred': 61,
-    'lightgreen': 62,
-    'lightyellow': 63,
-    'lightblue': 64,
-    'lightmagenta': 65,
-    'lightcyan': 66,
-    'white': 67,
+    'darkgray': 8,
+    'lightred': 9,
+    'lightgreen': 10,
+    'lightyellow': 11,
+    'lightblue': 12,
+    'lightmagenta': 13,
+    'lightcyan': 14,
+    'white': 15,
 }
 TERMCC_STYLE_TABLE = {
     'bold': 1,
@@ -139,16 +139,21 @@ TERMCC_STYLE_TABLE = {
     'reverse': 7,
     'hidden': 8,
 }
-TERMCC_TEXT_COLOR_BASE = 0  # 30
-TERMCC_BACK_COLOR_BASE = 0  # 40
 
-TERMCC_BOLD = 1
-TERMCC_DIM = 2
-TERMCC_ITALIC = 3
-TERMCC_UNDERLINE = 4
-TERMCC_BLINK = 5
-TERMCC_REVERSE = 7
-TERMCC_HIDDEN = 8
+
+def cc(text, **kwargs):
+    c = kwargs.get('fore')
+    b = kwargs.get('back')
+    ss = kwargs.get('styles')
+    p = ''
+    if c:
+        p += fore(c)
+    if b:
+        p += back(b)
+    if ss:
+        for s in ss:
+            p += style(s)
+    return p + text
 
 
 def wrap(text):
@@ -156,43 +161,47 @@ def wrap(text):
 
 
 def reset():
-    return TERMCC_RESET_ALL
+    return wrap(TERMCC_RESET_ALL)
 
 
 def rastyle():
-    return TERMCC_RESET_ALL_STYLE
+    return wrap(TERMCC_RESET_ALL_STYLE)
 
 
 def racolor():
-    return TERMCC_RESET_ALL_COLOR
+    return wrap(TERMCC_RESET_ALL_FORE)
 
 
 def raback():
-    return TERMCC_RESET_ALL_BACK
+    return wrap(TERMCC_RESET_ALL_BACK)
 
 
-def color(color):
-    return TERMCC_COLOR + str(TERMCC_COLOR_TABLE[color])
+def fore(fore):
+    if type(fore) == str:
+        return wrap(TERMCC_FORE + str(TERMCC_FORE_TABLE[fore]))
+    if 0 < fore <= 256:
+        return wrap(TERMCC_FORE + str(fore))
+    return wrap(TERMCC_FORE + str(TERMCC_FORE_TABLE['white']))
 
 
-def rcolor(color):
-    return TERMCC_RESET_COLOR + str(TERMCC_COLOR_TABLE[color])
+def rfore(fore):
+    return wrap(TERMCC_RESET_FORE + str(TERMCC_FORE_TABLE[fore]))
 
 
 def back(color):
-    return TERMCC_BACK + str(TERMCC_COLOR_TABLE[color])
+    return wrap(TERMCC_BACK + str(TERMCC_FORE_TABLE[color]))
 
 
 def rback(color):
-    return TERMCC_RESET_BACK + str(TERMCC_BACK_TABLE[color])
+    return wrap(TERMCC_RESET_BACK + str(TERMCC_BACK_TABLE[color]))
 
 
 def style(style):
-    return TERMCC_STYLE + str(TERMCC_STYLE_TABLE[style])
+    return wrap(TERMCC_STYLE + str(TERMCC_STYLE_TABLE[style]))
 
 
 def rstyle(style):
-    return TERMCC_RESET_STYLE + str(TERMCC_STYLE_TABLE[style] + 20)
+    return wrap(TERMCC_RESET_STYLE + str(TERMCC_STYLE_TABLE[style] + 20))
 
 
 def bold():
@@ -252,127 +261,127 @@ def rhidden():
 
 
 def black():
-    return color('black')
+    return fore('black')
 
 
 def rblack():
-    return rcolor('black')
+    return rfore('black')
 
 
 def red():
-    return color('red')
+    return fore('red')
 
 
 def rred():
-    return rcolor('red')
+    return rfore('red')
 
 
 def green():
-    return color('green')
+    return fore('green')
 
 
 def rgreen():
-    return rcolor('green')
+    return rfore('green')
 
 
 def yellow():
-    return color('yellow')
+    return fore('yellow')
 
 
 def ryellow():
-    return rcolor('yellow')
+    return rfore('yellow')
 
 
 def blue():
-    return color('blue')
+    return fore('blue')
 
 
 def rblue():
-    return rcolor('blue')
+    return rfore('blue')
 
 
 def magenta():
-    return color('magenta')
+    return fore('magenta')
 
 
 def rmagenta():
-    return rcolor('magenta')
+    return rfore('magenta')
 
 
 def cyan():
-    return color('cyan')
+    return fore('cyan')
 
 
 def rcyan():
-    return rcolor('cyan')
+    return rfore('cyan')
 
 
 def lgray():
-    return color('lightgray')
+    return fore('lightgray')
 
 
 def rlgray():
-    return rcolor('lightgray')
+    return rfore('lightgray')
 
 
 def gray():
-    return color('darkgray')
+    return fore('darkgray')
 
 
 def rgray():
-    return rcolor('darkgray')
+    return rfore('darkgray')
 
 
 def lred():
-    return color('lightred')
+    return fore('lightred')
 
 
 def rlred():
-    return rcolor('lightred')
+    return rfore('lightred')
 
 
 def lgreen():
-    return color('lightgreen')
+    return fore('lightgreen')
 
 
 def rlgreen():
-    return rcolor('lightgreen')
+    return rfore('lightgreen')
 
 
 def lyellow():
-    return color('lightyellow')
+    return fore('lightyellow')
 
 
 def rlyellow():
-    return rcolor('lightyellow')
+    return rfore('lightyellow')
 
 
 def lblue():
-    return color('lightblue')
+    return fore('lightblue')
 
 
 def rlblue():
-    return rcolor('lightblue')
+    return rfore('lightblue')
 
 
 def lmagenta():
-    return color('lightmagenta')
+    return fore('lightmagenta')
 
 
 def rlmagenta():
-    return rcolor('lightmagenta')
+    return rfore('lightmagenta')
 
 
 def rlcyan():
-    return rcolor('lightcyan')
+    return rfore('lightcyan')
 
 
 def white():
-    return color('white')
+    return fore('white')
 
 
 def rwhite():
-    return rcolor('white')
+    return rfore('white')
 
 
 def black_():

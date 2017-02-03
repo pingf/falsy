@@ -6,14 +6,15 @@ from falsy.jlog.jlog import JLog
 from falsy.loader.yaml import Loader
 from falsy.swagger_proxy.middleware import SwaggerUIStaticMiddleware, CommonStaticMiddleware, CommonWSGIMiddleware
 from falsy.swagger_proxy.swagger_server import SwaggerServer
-from falsy.termcc.termcc import lgreen, bold, reset, wrap, italic
+from falsy.termcc.termcc import lgreen, bold, reset, italic, cc, red, rgreen, rlgreen
 
 
 class FALSY:
     def __init__(self, falcon_api=None,
                  static_path='static', static_dir='static', high_log=None):
         self.log = JLog(hightable=high_log).setup()
-        self.log.info(wrap(bold())+'falsy init')
+        # self.log.info(bold()+'falsy init')
+        self.log.info(cc('falsy init', color=77, styles=['italic', 'underlined','reverse']))
 
         self.api = self.falcon_api = falcon_api or falcon.API()
         self.static_path = static_path.strip('/')
@@ -21,13 +22,13 @@ class FALSY:
 
         self.api = CommonStaticMiddleware(self.falcon_api, static_dir=self.static_dir,
                                           url_prefix=self.static_path, log=self.log)
-        self.log.info('common static middleware loaded\n\t\t\turl_prefix(static_path):%s, static_dir:%s'%(self.static_path, self.static_dir))
+        self.log.info('common static middleware loaded\n\t\t\turl_prefix(static_path):%s, static_dir:%s' % (
+        self.static_path, self.static_dir))
 
     def wsgi(self, app, url_prefix='/wsgi'):
         self.api = CommonWSGIMiddleware(self.api, app, url_prefix=url_prefix, log=self.log)
-        self.log.info('common wsgi middleware loaded\n\t\t\turl_prefix:%s'%(self.static_path))
+        self.log.info('common wsgi middleware loaded\n\t\t\turl_prefix:%s' % (self.static_path))
         return self
-
 
     def swagger(self, filename, ui=False, new_file=None, ui_language='en', theme='normal', errors=None):
         server = SwaggerServer(errors=errors, log=self.log)
@@ -45,7 +46,7 @@ class FALSY:
                 with open(new_path, 'w') as fw:
                     config = self.remove_error_info(config)
                     json.dump(config, fw, sort_keys=True, indent=4)
-            self.log.info('swagger file generated(from yaml file)\n\t\t\tnew_path:%s'%(new_path))
+            self.log.info('swagger file generated(from yaml file)\n\t\t\tnew_path:%s' % (new_path))
         else:
             new_file = new_file or swagger_file
             new_path = self.static_dir + '/' + new_file
@@ -55,15 +56,15 @@ class FALSY:
                 with open(new_path, 'w') as fw:
                     config = self.remove_error_info(config)
                     json.dump(config, fw, sort_keys=True, indent=4)
-            self.log.info('swagger file generated(from json file)\n\t\t\tnew_path:%s'%(new_path))
+            self.log.info('swagger file generated(from json file)\n\t\t\tnew_path:%s' % (new_path))
         path = server.basePath
         path = path.lstrip('/') if path else 'v0'
-        self.falcon_api.add_sink(server, '/'+path)
-        self.log.info('swagger server sinked\n\t\t\t%s'%(wrap(lgreen())+'path:'+path+wrap(reset())))
+        self.falcon_api.add_sink(server, '/' + path)
+        self.log.info('swagger server sinked\n\t\t\t%s' % (lgreen() + 'path:' + path + reset()))
         if ui:
             self.api = SwaggerUIStaticMiddleware(self.api, swagger_file=self.static_path + '/' + new_file,
                                                  url_prefix=path, language=ui_language, theme=theme)
-            self.log.info('swagger ui static middleware loaded\n\t\t\turl_prefix(static_path):%s'%(self.static_path))
+            self.log.info('swagger ui static middleware loaded\n\t\t\turl_prefix(static_path):%s' % (self.static_path))
         return self
 
     # deprecated

@@ -13,3 +13,4 @@ ChangeLog
 AUTHORS
 .python-version
 **/*.log*
+**/demo/**/*.json

@@ -5,8 +5,8 @@ import traceback
 
 import collections
 from colorlog import ColoredFormatter
-from falsy.termcc.termcc import blue, yellow, cyan, red, bold, magenta, red_, green, color, reset, TERMCC_BOLD, \
-     back, TERMCC_DIM, style, rstyle, ritalic, rred, rastyle, wrap
+from falsy.termcc.termcc import blue, yellow, cyan, red, bold, magenta, red_, green, fore, reset, \
+     back, style, rstyle, ritalic, rred, rastyle, reverse
 
 
 class TraceFilter(logging.Filter):
@@ -53,22 +53,22 @@ default_log_colors = {
 
 
 codes = {
-    'black': color('black'),
-    'red': color('red'),
-    'green': color('green'),
-    'yellow': color('yellow'),
-    'blue': color('blue'),
-    'magenta': color('magenta'),
-    'cyan': color('cyan'),
-    'lgray': color('lightgray'),
-    'gray': color('darkgray'),
-    'lred': color('lightred'),
-    'lgreen': color('lightgreen'),
-    'lyellow': color('lightyellow'),
-    'lblue': color('lightblue'),
-    'lmagenta': color('lightmagenta'),
-    'lcyan': color('lightcyan'),
-    'white': color('white'),
+    'black': fore('black'),
+    'red': fore('red'),
+    'green': fore('green'),
+    'yellow': fore('yellow'),
+    'blue': fore('blue'),
+    'magenta': fore('magenta'),
+    'cyan': fore('cyan'),
+    'lgray': fore('lightgray'),
+    'gray': fore('darkgray'),
+    'lred': fore('lightred'),
+    'lgreen': fore('lightgreen'),
+    'lyellow': fore('lightyellow'),
+    'lblue': fore('lightblue'),
+    'lmagenta': fore('lightmagenta'),
+    'lcyan': fore('lightcyan'),
+    'white': fore('white'),
 
 
     'black_': back('black'),
@@ -96,6 +96,7 @@ codes = {
     'rstyle': rastyle(),
     'rred': rred(),
     'ritalic': ritalic(),
+    'reverse': reverse()
 }
 
 # The color names
@@ -111,10 +112,20 @@ COLORS = [
 ]
 
 
+def get_code(e):
+    if '0'<e[0]<'9':
+        if len(e)>1:
+            if e[-1] == '_':
+                return back(int(e[:-1]))
+            else:
+                return fore(int(e))
+        else:
+            return fore(e)
+    return codes[e]
 
 def parse_colors(sequence):
     # a = ''.join(escape_codes[n] for n in sequence.split(',') if n)
-    a = wrap(''.join(codes[n] for n in sequence.split(',') if n))
+    a = ''.join(get_code(e) for e in sequence.split(',') if e)
     return a
 
 
@@ -159,8 +170,8 @@ class JLogColoredFormatter(logging.Formatter):
 
         message = super().format(record)
 
-        if self.reset and not message.endswith(wrap(codes['reset'])):
-            message += wrap(codes['reset'])
+        if self.reset and not message.endswith(codes['reset']):
+            message += codes['reset']
 
         return message
 
@@ -184,7 +195,7 @@ class JLog:
                     'datefmt': '%m%d %H:%M:%S',
                     'log_colors': {
                         'DEBUG': 'blue',
-                        'INFO': 'green',
+                        'INFO':'green',
                         'WARNING': 'yellow',
                         'ERROR': 'red',
                         'CRITICAL': 'bold_red',
