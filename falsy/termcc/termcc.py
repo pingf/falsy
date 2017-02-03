@@ -91,134 +91,418 @@
 # Intensity	0	1	2	3	4	5	6	7
 # Normal	Black	Red	Green	Yellow[12]	Blue	Magenta	Cyan	White
 # Bright	Black	Red	Green	Yellow	Blue	Magenta	Cyan	White
+# \e[0m resets all colors and attributes.
+# \e[20m resets only attributes (underline, etc.), leaving colors unchanged.
+# \e[39m resets only foreground color, leaving attributes unchanged.
+# \e[49m resets only background color, leaving attributes unchanged.
 
 
 TERMCC_PREFIX = '\033['
 TERMCC_SUFFIX = 'm'
-TERMCC_RESET = 0
 
-TERMCC_COLOR_TABLE = {
-    'Black': 0,
-    'Red': 1,
-    'Green': 2,
-    'Yellow': 3,
-    'Blue': 4,
-    'Magenta': 5,
-    'Cyan': 6,
-    'White': 7
+TERMCC_COLOR = '38;5;'
+TERMCC_RESET_COLOR = '39;5;'
+TERMCC_BACK = '48;5;'
+TERMCC_RESET_BACK = '49;5;'
+TERMCC_STYLE = ''
+TERMCC_RESET_STYLE = ''
+
+TERMCC_RESET_ALL = '0'
+TERMCC_RESET_ALL_STYLE = '20'
+TERMCC_RESET_ALL_COLOR = '39'
+TERMCC_RESET_ALL_BACK = '49'
+
+TERMCC_COLOR_TABLE = TERMCC_BACK_TABLE = {
+    'black': 0,
+    'red': 1,
+    'green': 2,
+    'yellow': 3,
+    'blue': 4,
+    'magenta': 5,
+    'cyan': 6,
+    'lightgray': 7,
+    'darkgray': 60,
+    'lightred': 61,
+    'lightgreen': 62,
+    'lightyellow': 63,
+    'lightblue': 64,
+    'lightmagenta': 65,
+    'lightcyan': 66,
+    'white': 67,
 }
-TERMCC_TEXT_COLOR_BASE = 30
-TERMCC_BACK_COLOR_BASE = 40
+TERMCC_STYLE_TABLE = {
+    'bold': 1,
+    'dim': 2,
+    'italic': 3,
+    'underlined': 4,
+    'blink': 5,
+    'reverse': 7,
+    'hidden': 8,
+}
+TERMCC_TEXT_COLOR_BASE = 0  # 30
+TERMCC_BACK_COLOR_BASE = 0  # 40
 
-TERMCC_NORMAL = 1
 TERMCC_BOLD = 1
-TERMCC_FAINT = 2
+TERMCC_DIM = 2
 TERMCC_ITALIC = 3
 TERMCC_UNDERLINE = 4
+TERMCC_BLINK = 5
+TERMCC_REVERSE = 7
+TERMCC_HIDDEN = 8
 
 
-def _wrap(code):
-    return TERMCC_PREFIX + str(code) + TERMCC_SUFFIX
+def wrap(text):
+    return TERMCC_PREFIX + str(text) + TERMCC_SUFFIX
 
 
-def _reset():
-    return _wrap(TERMCC_RESET)
+def reset():
+    return TERMCC_RESET_ALL
 
 
-def _text_color(color):
-    return _wrap(TERMCC_TEXT_COLOR_BASE + TERMCC_COLOR_TABLE[color])
+def rastyle():
+    return TERMCC_RESET_ALL_STYLE
 
 
-def _back_color(color):
-    return _wrap(TERMCC_BACK_COLOR_BASE + TERMCC_COLOR_TABLE[color])
-
-def normal(text):
-    return _wrap(TERMCC_NORMAL) + text + _reset()
-
-def bold(text):
-    return _wrap(TERMCC_BOLD) + text + _reset()
+def racolor():
+    return TERMCC_RESET_ALL_COLOR
 
 
-def faint(text):
-    return _wrap(TERMCC_FAINT) + text + _reset()
+def raback():
+    return TERMCC_RESET_ALL_BACK
 
 
-def italic(text):
-    return _wrap(TERMCC_ITALIC) + text + _reset()
+def color(color):
+    return TERMCC_COLOR + str(TERMCC_COLOR_TABLE[color])
 
 
-def underline(text):
-    return _wrap(TERMCC_UNDERLINE) + text + _reset()
+def rcolor(color):
+    return TERMCC_RESET_COLOR + str(TERMCC_COLOR_TABLE[color])
 
 
-def black(text):
-    return _text_color('Black') + text + _reset()
+def back(color):
+    return TERMCC_BACK + str(TERMCC_COLOR_TABLE[color])
 
 
-def red(text):
-    return _text_color('Red') + text + _reset()
+def rback(color):
+    return TERMCC_RESET_BACK + str(TERMCC_BACK_TABLE[color])
 
 
-def green(text):
-    return _text_color('Green') + text + _reset()
+def style(style):
+    return TERMCC_STYLE + str(TERMCC_STYLE_TABLE[style])
 
 
-def yellow(text):
-    return _text_color('Yellow') + text + _reset()
+def rstyle(style):
+    return TERMCC_RESET_STYLE + str(TERMCC_STYLE_TABLE[style] + 20)
 
 
-def blue(text):
-    return _text_color('Blue') + text + _reset()
+def bold():
+    return style('bold')  #
 
 
-def magenta(text):
-    return _text_color('Magenta') + text + _reset()
+def rbold():
+    return rstyle('bold')
 
 
-def cyan(text):
-    return _text_color('Cyan') + text + _reset()
+def dim():
+    return style('dim')  #
 
 
-def white(text):
-    return _text_color('White') + text + _reset()
+def rdim():
+    return rstyle('dim')
 
 
-def black_(text):
-    return _back_color('Black') + text + _reset()
+def italic():
+    return style('italic')  #
 
 
-def red_(text):
-    return _back_color('Red') + text + _reset()
+def ritalic():
+    return rstyle('italic')
 
 
-def green_(text):
-    return _back_color('Green') + text + _reset()
+def underlined():
+    return style('italic')
 
 
-def yellow_(text):
-    return _back_color('Yellow') + text + _reset()
+def runderlined():
+    return rstyle('italic')
 
 
-def blue_(text):
-    return _back_color('Blue') + text + _reset()
+def blink():
+    return style('blink')
 
 
-def magenta_(text):
-    return _back_color('Magenta') + text + _reset()
+def rblink():
+    return rstyle('blink')
 
 
-def cyan_(text):
-    return _back_color('Cyan') + text + _reset()
+def reverse():
+    return style('reverse')
 
 
-def white_(text):
-    return _back_color('White') + text + _reset()
+def rreverse():
+    return rstyle('reverse')
+
+
+def hidden():
+    return style('hidden')  #
+
+
+def rhidden():
+    return rstyle('hidden')
+
+
+def black():
+    return color('black')
+
+
+def rblack():
+    return rcolor('black')
+
+
+def red():
+    return color('red')
+
+
+def rred():
+    return rcolor('red')
+
+
+def green():
+    return color('green')
+
+
+def rgreen():
+    return rcolor('green')
+
+
+def yellow():
+    return color('yellow')
+
+
+def ryellow():
+    return rcolor('yellow')
+
+
+def blue():
+    return color('blue')
+
+
+def rblue():
+    return rcolor('blue')
+
+
+def magenta():
+    return color('magenta')
+
+
+def rmagenta():
+    return rcolor('magenta')
+
+
+def cyan():
+    return color('cyan')
+
+
+def rcyan():
+    return rcolor('cyan')
+
+
+def lgray():
+    return color('lightgray')
+
+
+def rlgray():
+    return rcolor('lightgray')
+
+
+def gray():
+    return color('darkgray')
+
+
+def rgray():
+    return rcolor('darkgray')
+
+
+def lred():
+    return color('lightred')
+
+
+def rlred():
+    return rcolor('lightred')
+
+
+def lgreen():
+    return color('lightgreen')
+
+
+def rlgreen():
+    return rcolor('lightgreen')
+
+
+def lyellow():
+    return color('lightyellow')
+
+
+def rlyellow():
+    return rcolor('lightyellow')
+
+
+def lblue():
+    return color('lightblue')
+
+
+def rlblue():
+    return rcolor('lightblue')
+
+
+def lmagenta():
+    return color('lightmagenta')
+
+
+def rlmagenta():
+    return rcolor('lightmagenta')
+
+
+def rlcyan():
+    return rcolor('lightcyan')
+
+
+def white():
+    return color('white')
+
+
+def rwhite():
+    return rcolor('white')
+
+
+def black_():
+    return back('black')
+
+
+def rblack_():
+    return rback('black')
+
+
+def red_():
+    return back('red')
+
+
+def rred_():
+    return rback('red')
+
+
+def green_():
+    return back('green')
+
+
+def rgreen_():
+    return rback('green')
+
+
+def yellow_():
+    return back('yellow')
+
+
+def ryellow_():
+    return rback('yellow')
+
+
+def blue_():
+    return back('blue')
+
+
+def rblue_():
+    return rback('blue')
+
+
+def magenta_():
+    return back('magenta')
+
+
+def rmagenta_():
+    return rback('magenta')
+
+
+def cyan_():
+    return back('cyan')
+
+
+def rcyan_():
+    return rback('cyan')
+
+
+def lgray_():
+    return back('lightgray')
+
+
+def rlgray_():
+    return rback('lightgray')
+
+
+def gray_():
+    return back('darkgray')
+
+
+def rgray_():
+    return rback('darkgray')
+
+
+def lred_():
+    return back('lightred')
+
+
+def rlred_():
+    return rback('lightred')
+
+
+def lgreen_():
+    return back('lightgreen')
+
+
+def rlgreen_():
+    return rback('lightgreen')
+
+
+def lyellow_():
+    return back('lightyellow')
+
+
+def rlyellow_():
+    return rback('lightyellow')
+
+
+def lblue_():
+    return back('lightblue')
+
+
+def rlblue_():
+    return rback('lightblue')
+
+
+def lmagenta_():
+    return back('lightmagenta')
+
+
+def rlmagenta_():
+    return rback('lightmagenta')
+
+
+def lcyan_():
+    return back('lightcyan')
+
+
+def rlcyan_():
+    return rback('lightcyan')
+
+
+def white_():
+    return back('white')
+
+
+def rwhite_():
+    return rback('white')
+
 
 if __name__ == '__main__':
     print(yellow_(blue('hello world')))
     print(red_(blue('hello world')))
-    print(bold(red('hello world')))
-    print(faint(red('hello world')))
-    print(red('hello world'))
-    print(italic(red('hello world')))
-    print(underline(red('hello world'))+' ... '+magenta_(cyan('hello world')))

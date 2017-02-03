@@ -1,22 +1,19 @@
 import json
 import os
-# import pprint
-
 import falcon
-# import shutil
-
 import yaml
 from falsy.jlog.jlog import JLog
 from falsy.loader.yaml import Loader
 from falsy.swagger_proxy.middleware import SwaggerUIStaticMiddleware, CommonStaticMiddleware, CommonWSGIMiddleware
 from falsy.swagger_proxy.swagger_server import SwaggerServer
+from falsy.termcc.termcc import lgreen, bold, reset, wrap, italic
 
 
 class FALSY:
     def __init__(self, falcon_api=None,
                  static_path='static', static_dir='static', high_log=None):
         self.log = JLog(hightable=high_log).setup()
-        self.log.info('falsy init')
+        self.log.info(wrap(bold())+'falsy init')
 
         self.api = self.falcon_api = falcon_api or falcon.API()
         self.static_path = static_path.strip('/')
@@ -48,7 +45,7 @@ class FALSY:
                 with open(new_path, 'w') as fw:
                     config = self.remove_error_info(config)
                     json.dump(config, fw, sort_keys=True, indent=4)
-            self.log.info('swagger file generated(from yaml file)')
+            self.log.info('swagger file generated(from yaml file)\n\t\t\tnew_path:%s'%(new_path))
         else:
             new_file = new_file or swagger_file
             new_path = self.static_dir + '/' + new_file
@@ -58,10 +55,11 @@ class FALSY:
                 with open(new_path, 'w') as fw:
                     config = self.remove_error_info(config)
                     json.dump(config, fw, sort_keys=True, indent=4)
-            self.log.info('swagger file generated(from json file)')
+            self.log.info('swagger file generated(from json file)\n\t\t\tnew_path:%s'%(new_path))
         path = server.basePath
         path = path.lstrip('/') if path else 'v0'
         self.falcon_api.add_sink(server, '/'+path)
+        self.log.info('swagger server sinked\n\t\t\t%s'%(wrap(lgreen())+'path:'+path+wrap(reset())))
         if ui:
             self.api = SwaggerUIStaticMiddleware(self.api, swagger_file=self.static_path + '/' + new_file,
                                                  url_prefix=path, language=ui_language, theme=theme)

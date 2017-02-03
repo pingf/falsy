@@ -109,33 +109,20 @@ def parse_colors(sequence):
 
 
 def parse_colors(sequence):
-    print('>>>>>>>>1', repr(sequence))
     a = ''.join(escape_codes[n] for n in sequence.split(',') if n)
-    print('>>>>>>>>2', repr(a))
     return a
 
 
-class ColoredFormatter1(logging.Formatter):
+class JLogColoredFormatter(logging.Formatter):
     def __init__(self, fmt=None, datefmt=None, style='%',
-                 log_colors=None, reset=True,
-                 secondary_log_colors=None):
+                 log_colors=None, reset=True):
         if fmt is None:
-            if datetime.sys.version_info > (3, 2):
-                fmt = default_formats[style]
-            else:
-                fmt = default_formats['%']
+            fmt = default_formats[style]
 
-        if sys.version_info > (3, 2):
-            super(ColoredFormatter1, self).__init__(fmt, datefmt, style)
-        elif sys.version_info > (2, 7):
-            super(ColoredFormatter1, self).__init__(fmt, datefmt)
-        else:
-            logging.Formatter.__init__(self, fmt, datefmt)
+        super(self).__init__(fmt, datefmt, style)
 
         self.log_colors = (
             log_colors if log_colors is not None else default_log_colors)
-        print(self.log_colors)
-        self.secondary_log_colors = secondary_log_colors
         self.reset = reset
 
     def color(self, log_colors, level_name):
@@ -147,55 +134,16 @@ class ColoredFormatter1(logging.Formatter):
         record = ColoredRecord(record)
         record.log_color = self.color(self.log_colors, record.levelname)
 
-        # # Set secondary log colors
-        # if self.secondary_log_colors:
-        #     for name, log_colors in self.secondary_log_colors.items():
-        #         color = self.color(log_colors, record.levelname)
-        #         setattr(record, name + '_log_color', color)
-
-        print(dir(record))
-        message = super(ColoredFormatter1, self).format(record)
+        message = super(self).format(record)
 
         if self.reset and not message.endswith(escape_codes['reset']):
             message += escape_codes['reset']
-        print('0000', message)
 
         return message
 
 
-class ContextFilter(logging.Filter):
-    """
-    This is a filter which injects contextual information into the log.
-
-    Rather than use actual contextual information, we just use random
-    data in this demo.
-    """
-
-    USERS = ['jim', 'fred', 'sheila']
-    IPS = ['123.231.231.123', '127.0.0.1', '192.168.0.1']
-
-    def filter(self, record):
-        record.ip = choice(ContextFilter.IPS)
-        record.user = choice(ContextFilter.USERS)
-        return True
 
 
-class MyFilter(logging.Filter):
-    def __init__(self, param=None):
-        print('???????')
-        self.param = param
-
-    def filter(self, record):
-        if 'hehe' in record.msg:
-            record.msg = '!!!!: ' + record.msg
-        # print('???????2')
-        # if self.param is None:
-        #     allow = True
-        # else:
-        #     allow = self.param not in record.msg
-        # if allow:
-        #     record.msg = 'changed: ' + record.msg
-        return True
 
 
 LOG_CONFIG = {
