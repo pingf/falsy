@@ -148,6 +148,7 @@ def cc(text, **kwargs):
     p = ''
     if c:
         p += fore(c)
+        print(p)
     if b:
         p += back(b)
     if ss:

@@ -188,7 +188,6 @@ class JLog:
                     'datefmt': '%Y-%m-%d %H:%M:%S %Z%z'
                 },
                 'colored': {
-                    # '()': 'colorlog.ColoredFormatter',
                     '()': JLogColoredFormatter,
                     'fmt': '%(yellow)s%(asctime)s.%(msecs)03d%(reset)s %(cyan)s%(name)-8s%(reset)s'
                               '%(log_color)s%(message)s%(reset)s%(trace)s%(high)s',
