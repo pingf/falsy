@@ -46,7 +46,7 @@ default_log_colors = {
     'INFO': 'green',
     'WARNING': 'yellow',
     'ERROR': 'red',
-    'CRITICAL': 'bold_red',
+    'CRITICAL': 'red',
 }
 
 codes = {
@@ -198,7 +198,7 @@ class JLog:
                         'INFO': 'green',
                         'WARNING': 'yellow',
                         'ERROR': 'red',
-                        'CRITICAL': 'bold_red',
+                        'CRITICAL': 'red',
                     }
                 },
 
@@ -281,14 +281,8 @@ class JLog:
             if l > shortfile:
                 filename = filename[filename.find('/', l - shortfile):]
             line = '%-40s:%-4s %s' % (
-                blue(filename), yellow(str(s.lineno)), '|' + '-' * (i * 4) + cyan(s.name) + ':' + red(s.line))
+                blue()+filename, yellow()+str(s.lineno), '|' + '-' * (i * 4) + cyan()+s.name + ':' + red()+s.line)
             lines.append(line)
-        lines = '\n\t\t'.join(lines)
-        kwargs['extra'] = {'trace': magenta(str(exc_type)) + ' ' + bold(magenta(str(exc_value))) + '\n\t\t' + lines}
+        lines = '\n\t'.join(lines)
+        kwargs['extra'] = {'trace': magenta()+str(exc_type) + ' ' + bold()+magenta()+str(exc_value) + '\n\t' + lines}
 
-    def remap(self, tp, arg):
-        if self.hightable:
-            m = self.hightable.get(tp)
-            if m:
-                return m.get(arg, arg)
-        return arg
