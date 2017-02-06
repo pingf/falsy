@@ -6,7 +6,7 @@ import traceback
 import collections
 from colorlog import ColoredFormatter
 from falsy.termcc.termcc import blue, yellow, cyan, red, bold, magenta, red_, green, fore, reset, \
-     back, style, rstyle, ritalic, rred, rastyle, reverse
+    back, style, rstyle, ritalic, rred, rastyle, reverse
 
 
 class TraceFilter(logging.Filter):
@@ -49,9 +49,6 @@ default_log_colors = {
     'CRITICAL': 'bold_red',
 }
 
-
-
-
 codes = {
     'black': fore('black'),
     'red': fore('red'),
@@ -69,7 +66,6 @@ codes = {
     'lmagenta': fore('lightmagenta'),
     'lcyan': fore('lightcyan'),
     'white': fore('white'),
-
 
     'black_': back('black'),
     'red_': back('red'),
@@ -113,8 +109,8 @@ COLORS = [
 
 
 def get_code(e):
-    if '0'<e[0]<'9':
-        if len(e)>1:
+    if '0' <= e[0] <= '9':
+        if len(e) > 1:
             if e[-1] == '_':
                 return back(int(e[:-1]))
             else:
@@ -122,6 +118,7 @@ def get_code(e):
         else:
             return fore(e)
     return codes[e]
+
 
 def parse_colors(sequence):
     # a = ''.join(escape_codes[n] for n in sequence.split(',') if n)
@@ -147,6 +144,8 @@ class ColoredRecord(object):
 
     def __getattr__(self, name):
         return getattr(self.__record, name)
+
+
 class JLogColoredFormatter(logging.Formatter):
     def __init__(self, fmt=None, datefmt=None, style='%',
                  log_colors=None, reset=True):
@@ -177,9 +176,11 @@ class JLogColoredFormatter(logging.Formatter):
 
 
 class JLog:
-    def __init__(self, hightable=None):
-        self.hightable = hightable
-        self.config = {
+    def __init__(self):
+        self.logger = None
+
+    def setup(self, hightable=None):
+        config = {
             'version': 1,
             'disable_existing_loggers': False,
             'formatters': {
@@ -189,12 +190,12 @@ class JLog:
                 },
                 'colored': {
                     '()': JLogColoredFormatter,
-                    'fmt': '%(yellow)s%(asctime)s.%(msecs)03d%(reset)s %(cyan)s%(name)-8s%(reset)s'
-                              '%(log_color)s%(message)s%(reset)s%(trace)s%(high)s',
+                    'fmt': '%(99)s%(process)s-%(thread)s%(reset)s %(yellow)s%(asctime)s.%(msecs)03d%(reset)s %(cyan)s%(name)-8s%(reset)s'
+                           '%(log_color)s%(message)s%(reset)s%(trace)s%(high)s',
                     'datefmt': '%m%d %H:%M:%S',
                     'log_colors': {
                         'DEBUG': 'blue',
-                        'INFO':'green',
+                        'INFO': 'green',
                         'WARNING': 'yellow',
                         'ERROR': 'red',
                         'CRITICAL': 'bold_red',
@@ -208,7 +209,7 @@ class JLog:
                 },
                 'highlight_filter': {
                     '()': HighlightFilter,
-                    'hightable': self.hightable
+                    'hightable': hightable
                 }
             },
             'handlers': {
@@ -235,14 +236,12 @@ class JLog:
                 },
             }
         }
-
-    def setup(self):
-        logging.config.dictConfig(self.config)
-        self.logger = logging.getLogger('falsy')
+        logging.config.dictConfig(config)
         return self
 
-    def get_falsy(self):
-        return self.logger
+    def bind(self, name='falsy'):
+        self.logger = logging.getLogger(name)
+        return self
 
     def debug(self, msg, *args, **kwargs):
         return self.logger.debug(msg, *args, **kwargs)

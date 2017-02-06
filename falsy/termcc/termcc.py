@@ -154,7 +154,7 @@ def cc(text, **kwargs):
     if ss:
         for s in ss:
             p += style(s)
-    return p + text
+    return p + text + reset()
 
 
 def wrap(text):

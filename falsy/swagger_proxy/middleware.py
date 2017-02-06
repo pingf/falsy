@@ -5,16 +5,18 @@ import os
 import falcon
 from jinja2 import Template
 
+from falsy.jlog.jlog import JLog
+
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
 class CommonWSGIMiddleware(object):
-    def __init__(self, falcon_api, app, url_prefix='wsgi', log=None):
+    def __init__(self, falcon_api, app, url_prefix='wsgi'):
         self.falcon_api = falcon_api
         self.app = app
         self.url_prefix = url_prefix.lstrip('/')
-        self.log = log
+        self.log = JLog().bind('falsy')
 
     def __call__(self, environ, start_response):
         path_info = environ['PATH_INFO']
@@ -24,12 +26,13 @@ class CommonWSGIMiddleware(object):
 
 
 class CommonStaticMiddleware(object):
-    def __init__(self, app, static_dir='dist', url_prefix='static', log=None):
+    def __init__(self, app, static_dir='dist', url_prefix='static'):
         self.app = app
         self.static_dir = static_dir
         self.url_prefix = url_prefix.lstrip('/')
         self.path_dir = os.path.abspath(static_dir)
-        self.log = log
+        self.log = JLog().bind('falsy')
+
 
     def __call__(self, environ, start_response):
         path_info = environ['PATH_INFO']

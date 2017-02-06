@@ -38,18 +38,15 @@ def http_invalid_param_handler(req, resp, e):
 
 
 class SwaggerServer:
-    def __init__(self, errors=None, log=None):
+    def __init__(self, errors=None):
         self.default_content_type = 'application/json'
         self.specs = {}  # Meta()
         self.custom_error_map = errors
         self.op_loader = OperatorLoader()
-        self.log = log
+        self.log = JLog().bind('falsy')
 
     def __call__(self, req, resp):  # , **kwargs):
-        # log.info(dir(req))
-        self.log.info(req.remote_addr)
-        # self.req = req
-        # self.resp = resp
+        self.log.debug(req.remote_addr)
         self.process(req, resp)
 
     def load_specs(self, swagger_spec):
