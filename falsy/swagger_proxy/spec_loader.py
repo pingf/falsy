@@ -18,7 +18,7 @@ class SpecLoader:
         self.log = log
 
     def load_specs(self, swagger_spec):
-        self.log.debug("Loading swagger spec into routing table")
+        self.log.info("load swagger specs")
         try:
             swagger_spec = json.loads(swagger_spec) if type(swagger_spec) == str else swagger_spec
         except:

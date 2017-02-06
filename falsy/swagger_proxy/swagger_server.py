@@ -9,9 +9,6 @@ from falsy.jlog.jlog import JLog
 from falsy.swagger_proxy.operator_loader import OperatorLoader
 from falsy.swagger_proxy.spec_loader import SpecLoader
 
-logging.basicConfig(level=logging.INFO)
-log = logging.getLogger(__name__)
-
 
 def default_error_handler(req, resp, e):
     resp.body = json.dumps({'error': str(e)})
@@ -47,6 +44,8 @@ class SwaggerServer:
 
     def __call__(self, req, resp):  # , **kwargs):
         self.log.debug(req.remote_addr)
+        self.log.debug(req.uri)
+        self.log.debug(req.method)
         self.process(req, resp)
 
     def load_specs(self, swagger_spec):
@@ -76,7 +75,7 @@ class SwaggerServer:
                 default_error_handler(req, resp, e)
 
     def process_preflight_request(self, req, resp):
-        log.info("Got an OPTIONS request: ".format(req.relative_uri))
+        self.log.info("option request: ".format(req.relative_uri))
         resp.set_header('Access-Control-Allow-Origin', '*')
         resp.set_header('Access-Control-Allow-Credentials', 'true')
         resp.set_header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
@@ -139,7 +138,7 @@ class SwaggerServer:
                 raise e
             if base_excp is not None:
                 base_excp(req=req, resp=resp, error=e)
-        log.info("Request URL does not match any route signature: {}".format(route_signature))
+        self.log.info("url does not match any route signature: {}".format(route_signature))
         raise falcon.HTTPNotFound()
 
     def process_response(self, req, resp, handler_return):

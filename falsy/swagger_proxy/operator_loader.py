@@ -3,12 +3,16 @@ import json
 import logging
 
 from falsy.dynamic_import import get_function_from_name
+from falsy.jlog.jlog import JLog
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
 class OperatorLoader:
+    def __init__(self):
+        self.log = JLog().bind('falsy')
+
     def load_base(self, spec):
         bid = spec.get('beforeId')
         aid = spec.get('afterId')
@@ -66,6 +70,11 @@ class OperatorLoader:
         name = param.get('name')
         type_ = param.get('type')
 
+        self.log.debug('param in query')
+        self.log.debug(name)
+        self.log.debug(type_)
+
+
         default_func = lambda p: req.get_param(p) if type_ is not None else None
 
         check_funcs = {
@@ -76,6 +85,7 @@ class OperatorLoader:
         }
         try:
             value = check_funcs.get(type_, default_func)(name)
+            self.log.debug(value)
         except ValueError as e:
             raise falcon.HTTPInvalidParam('invalid param in query', name)
         if param.get('required') and value is None:
@@ -123,7 +133,12 @@ class OperatorLoader:
     def param_in_path(self, matched_uri, param):
         type_ = param.get('type')
         name = param.get('name')
+        self.log.debug('param in path')
+        self.log.debug(name)
+        self.log.debug(type_)
+
         value = matched_uri.groupdict().get(name)
+        self.log.debug(value)
         default_func = lambda v: v if type_ is not None else None
         check_funcs = {
             'string': lambda v: str(v),
@@ -142,8 +157,12 @@ class OperatorLoader:
         headers = req.headers
         name = param.get('name').upper().replace('_', '-')
         type_ = param.get('type')
-        value = headers.get(name)
+        self.log.debug('param in path')
+        self.log.debug(name)
+        self.log.debug(type_)
 
+        value = headers.get(name)
+        self.log.debug(value)
         if param.get('required') and value is None:
             raise falcon.HTTPMissingParam(name)
 
@@ -168,18 +187,21 @@ class OperatorLoader:
         try:
             value = check_funcs.get(type_, default_func)(value)
         except ValueError as e:
-            raise falcon.HTTPInvalidParam('invalid param in header', name+':'+value)
+            raise falcon.HTTPInvalidParam('invalid param in header', name + ':' + value)
         if param.get('required') and value is None:
             raise falcon.HTTPMissingParam(name)
         return value
-
 
     def param_in_body(self, req, spec, param):
         body = req.stream.read().decode('utf-8')
         schema = spec.get('schema')
         name = param.get('name')
         type_ = schema.get('type')
+        self.log.debug('param in path')
+        self.log.debug(name)
+        self.log.debug(type_)
         value = body
+        self.log.debug(value)
 
         if param.get('required') and body is None:
             raise falcon.HTTPMissingParam(name)
