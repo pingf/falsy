@@ -49,6 +49,12 @@ class SwaggerServer:
     def process(self, req, resp):
         if req.method == 'OPTIONS':
             self.process_preflight_request(req, resp)
+            response_body = '\n'
+
+            response_body += 'nothing here\n\n'
+
+            resp.body = response_body
+            resp.status = falcon.HTTP_200
             return
         try:
             self.process_preflight_request(req, resp)
@@ -79,12 +85,6 @@ class SwaggerServer:
                         'Authorization, X-Auth-Token, Keep-Alive, Users-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type')
         # resp.set_header('Access-Control-Max-Age', 1728000)  # 20 days
 
-        response_body = '\n'
-
-        response_body += 'nothing here\n\n'
-
-        resp.body = response_body
-        resp.status = falcon.HTTP_200
 
     def dispatch(self, req, resp):
         base_before, base_after, base_excp = self.op_loader.load_base(self.specs)
