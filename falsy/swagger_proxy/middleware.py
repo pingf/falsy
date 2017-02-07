@@ -33,11 +33,9 @@ class CommonStaticMiddleware(object):
         self.path_dir = os.path.abspath(static_dir)
         self.log = JLog().bind('falsy')
 
-
     def __call__(self, environ, start_response):
         path_info = environ['PATH_INFO']
-        resource_path = self.resolve_resouce(path_info,
-                                             self.url_prefix)  # path_info[path_info.find('/', 2):].lstrip('/')
+        resource_path = self.resolve_resouce(path_info, self.url_prefix)
         if path_info and path_info.startswith('/' + self.url_prefix):
 
             path = os.path.abspath(

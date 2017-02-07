@@ -30,6 +30,7 @@ def validate_get_required(name):
 
 
 def get_it_required(name):
+    raise Exception('name')
     return {
         'get': name
     }

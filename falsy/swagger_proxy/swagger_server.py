@@ -1,9 +1,5 @@
-from functools import lru_cache
-import pprint
-
 import falcon
 import json
-import logging
 
 from falsy.jlog.jlog import JLog
 from falsy.swagger_proxy.operator_loader import OperatorLoader
@@ -43,9 +39,7 @@ class SwaggerServer:
         self.log = JLog().bind('falsy')
 
     def __call__(self, req, resp):  # , **kwargs):
-        self.log.debug(req.remote_addr)
-        self.log.debug(req.uri)
-        self.log.debug(req.method)
+        self.log.debug('remote_addr:{}, uri:{}, method:{}'.format(req.remote_addr, req.uri, req.method))
         self.process(req, resp)
 
     def load_specs(self, swagger_spec):
@@ -59,6 +53,7 @@ class SwaggerServer:
         try:
             self.dispatch(req, resp)
         except Exception as e:
+            self.log.error_trace('process failed')
             error_type = type(e)
             error_map = {
                 falcon.errors.HTTPNotFound: http_not_found_handler,
