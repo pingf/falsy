@@ -26,6 +26,8 @@ class SpecLoader:
             raise Exception("Unable to parse the Swagger spec JSON document.")
         try:
             self.specs['basePath'] = swagger_spec.get('basePath')
+            self.specs['consumes'] = swagger_spec.get('consumes')
+            self.specs['produces'] = swagger_spec.get('produces')
             self.specs['beforeId'] = self.load_handler(swagger_spec.get('beforeId'))
             self.specs['afterId'] = self.load_handler(swagger_spec.get('afterId'))
             self.specs['exceptionId'] = self.load_handler(swagger_spec.get('exceptionId'))

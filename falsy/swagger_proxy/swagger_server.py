@@ -114,7 +114,9 @@ class SwaggerServer:
                                     handler_return = handler(req=req, resp=resp, **params)
                                 else:
                                     handler_return = handler(**params)
-                                self.process_response(req, resp, handler_return)
+
+                                content_type = self.produces(spec.get('produces'), self.specs.get('produces'))
+                                self.process_response(req, resp, handler_return, content_type)
 
                             if after:
                                 after(req=req, resp=resp, response=handler_return, **params)
@@ -136,8 +138,8 @@ class SwaggerServer:
         self.log.info("url does not match any route signature: {}".format(route_signature))
         raise falcon.HTTPNotFound()
 
-    def process_response(self, req, resp, handler_return):
-        content_type = 'text/plain'
+    def process_response(self, req, resp, handler_return, content_type='application/json'):
+        # content_type = 'text/plain'
         if handler_return is None:
             return
         if type(handler_return) == tuple:
@@ -145,14 +147,14 @@ class SwaggerServer:
             http_code = handler_return[1]
             if len(handler_return) > 2:
                 content_type = handler_return[2]
-            else:
-                if type(data) == dict or type(data) == list:
-                    content_type = 'application/json'
+            # else:
+            #     if type(data) == dict or type(data) == list:
+            #         content_type = 'application/json'
         else:
             data = handler_return
             http_code = falcon.HTTP_200
-            if type(data) == dict or type(data) == list:
-                content_type = 'application/json'
+            # if type(data) == dict or type(data) == list:
+            #     content_type = 'application/json'
         if resp.body:
             try:
                 pre_body = json.loads(resp.body)
@@ -168,6 +170,13 @@ class SwaggerServer:
                 resp.body = pre_body + json.dumps(data, indent=2) if 'json' in content_type else json.dumps(
                     pre_body) + data
         else:
-            resp.body = json.dumps(data, indent=2) if 'json' in content_type else data
+            resp.body = json.dumps(data, indent=2) if 'json' in content_type else str(data)
         resp.content_type = content_type
         resp.status = http_code
+
+    def produces(self, mp=None, gp=None):
+        if mp is not None:
+            return mp[0]
+        if gp is not None:
+            return gp[0]
+        return 'application/json'

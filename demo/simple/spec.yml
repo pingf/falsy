@@ -5,6 +5,7 @@ info:
 consumes:
   - application/json
 produces:
+  - text/html
   - application/json
 basePath: "/v1"
 paths:
