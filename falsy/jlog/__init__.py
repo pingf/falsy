@@ -1,16 +1,11 @@
-import json
-import logging.config
 import logging
 
 import datetime
 
 import collections
-from random import choice
 
-from colorlog import ColoredFormatter
 from falsy.jlog.filter import MyFilter
 
-from falsy.termcc.termcc import red
 
 
 class ColoredRecord(object):
@@ -46,7 +41,6 @@ class MyFormatter(logging.Formatter):
         return s
 
 
-# from colorlog import ColoredFormatter
 
 default_formats = {
     '%': '%(log_color)s%(levelname)s:%(name)s:%(message)s',
@@ -86,21 +80,6 @@ COLORS = [
     'cyan',
     'white'
 ]
-
-PREFIXES = [
-    # Foreground without prefix
-    ('3', ''), ('01;3', 'bold_'),
-
-    # Foreground with fg_ prefix
-    ('3', 'fg_'), ('01;3', 'fg_bold_'),
-
-    # Background with bg_ prefix - bold/light works differently
-    ('4', 'bg_'), ('10', 'bg_bold_'),
-]
-
-for prefix, prefix_name in PREFIXES:
-    for code, name in enumerate(COLORS):
-        escape_codes[prefix_name + name] = esc(prefix + str(code))
 
 
 def parse_colors(sequence):

@@ -1,12 +1,10 @@
 import logging
 
-import sys
 import traceback
 
 import collections
-from colorlog import ColoredFormatter
 from falsy.termcc.termcc import blue, yellow, cyan, red, bold, magenta, red_, green, fore, reset, \
-    back, style, rstyle, ritalic, rred, rastyle, reverse
+    back, style, ritalic, rred, rastyle, reverse
 
 
 class TraceFilter(logging.Filter):

@@ -10,7 +10,7 @@ basePath: "/v1"
 paths:
   '/hello':
     get:
-      tags: [Method]
+      tags: [GET]
       operationId: demo.simple.ops.hello.get_it
       summary: 测试get请求
       parameters:
@@ -22,7 +22,7 @@ paths:
         200:
           description: Return response
     post:
-      tags: [Method]
+      tags: [POST]
       operationId: demo.simple.ops.hello.post_it
       summary: 测试post请求
       parameters:
@@ -34,7 +34,7 @@ paths:
         200:
           description: Return response
     delete:
-      tags: [Method]
+      tags: [DELETE]
       operationId: demo.simple.ops.hello.delete_it
       summary: 测试delete请求
       parameters:
@@ -46,7 +46,7 @@ paths:
         200:
           description: Return response
     put:
-      tags: [Method]
+      tags: [PUT]
       operationId: demo.simple.ops.hello.put_it
       summary: 测试put请求
       parameters:
@@ -58,7 +58,7 @@ paths:
         200:
           description: Return response
     patch:
-      tags: [Method]
+      tags: [PATCH]
       operationId: demo.simple.ops.hello.patch_it
       summary: 测试patch请求
       parameters:

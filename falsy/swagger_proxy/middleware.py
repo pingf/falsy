@@ -79,7 +79,14 @@ class CommonStaticMiddleware(object):
 class SwaggerUIStaticMiddleware(object):
     def __init__(self, app, swagger_file='swagger.json', url_prefix='v1', language='en', theme='normal'):
         self.app = app
-        self.static_dir = 'vendors/dist_impress' if theme == 'responsive' or theme == 'impress' else 'vendors/dist_normal'
+        if theme == 'material' or theme == 'angular':
+            self.static_dir = 'vendors/dist_material'
+        elif theme == 'responsive' or theme == 'impress':
+            self.static_dir = 'vendors/dist_impress'
+        elif theme == 'normal' or theme == 'swagger':
+            self.static_dir = 'vendors/dist_normal'
+        else:
+            self.static_dir = 'vendors/dist_impress'
         self.url_prefix = url_prefix.lstrip('/')
         self.path_dir = os.path.abspath(
             os.path.join(
