@@ -51,6 +51,7 @@ class SwaggerServer:
             self.process_preflight_request(req, resp)
             return
         try:
+            self.process_preflight_request(req, resp)
             self.dispatch(req, resp)
         except Exception as e:
             self.log.error_trace('process failed')
@@ -71,16 +72,15 @@ class SwaggerServer:
 
     def process_preflight_request(self, req, resp):
         self.log.info("option request: ".format(req.relative_uri))
-        resp.set_header('Access-Control-Allow-Origin', '*')
+        resp.set_header('Access-Control-Allow-Origin', req.uri)
         resp.set_header('Access-Control-Allow-Credentials', 'true')
         resp.set_header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
         resp.set_header('Access-Control-Allow-Headers',
                         'Authorization, X-Auth-Token, Keep-Alive, Users-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type')
-        resp.set_header('Access-Control-Max-Age', 1728000)  # 20 days
+        # resp.set_header('Access-Control-Max-Age', 1728000)  # 20 days
 
         response_body = '\n'
 
-        response_body += 'All Swagger operations:\n\n'
         response_body += 'nothing here\n\n'
 
         resp.body = response_body
