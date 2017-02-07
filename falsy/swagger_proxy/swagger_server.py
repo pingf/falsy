@@ -78,13 +78,17 @@ class SwaggerServer:
 
     def process_preflight_request(self, req, resp):
         self.log.info("option request: ".format(req.relative_uri))
-        resp.set_header('Access-Control-Allow-Origin', req.uri)
+        resp.set_header('Vary', 'Origin')
+        resp.set_header('Access-Control-Allow-Origin', self.allowed_origin(req))
         resp.set_header('Access-Control-Allow-Credentials', 'true')
         resp.set_header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
         resp.set_header('Access-Control-Allow-Headers',
                         'Authorization, X-Auth-Token, Keep-Alive, Users-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type')
         # resp.set_header('Access-Control-Max-Age', 1728000)  # 20 days
 
+    def allowed_origin(self, req):
+        host = req.env['SERVER_NAME']+':'+req.env['SERVER_PORT']
+        return req.env['wsgi.url_scheme']+'://'+host
 
     def dispatch(self, req, resp):
         base_before, base_after, base_excp = self.op_loader.load_base(self.specs)
@@ -127,7 +131,7 @@ class SwaggerServer:
                                 excp(req=req, resp=resp, error=e)
                         return
                 except AttributeError as e:
-                    print(e, 'catched')
+                    self.log.error_trace("attributte error: {}".format(e))
             if base_after:
                 base_after(req=req, resp=resp)
         except Exception as e:
