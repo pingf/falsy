@@ -12,7 +12,7 @@ from falsy.termcc.termcc import lgreen, bold, reset, italic, cc, red, rgreen, rl
 class FALSY:
     def __init__(self, falcon_api=None,
                  static_path='static', static_dir='static', high_log=None):
-        self.log = JLog().setup(hightable=high_log).bind('falsy')
+        self.log = JLog().setup(highlights=high_log).bind()
         self.log.info(cc('falsy init', fore=77, styles=['italic', 'underlined', 'reverse']))
 
         self.api = self.falcon_api = falcon_api or falcon.API()
@@ -62,11 +62,12 @@ class FALSY:
         path = server.basePath
         path = path.lstrip('/') if path else 'v0'
         self.falcon_api.add_sink(server, '/' + path)
-        self.log.info('swagger server sinked\n\t{}'.format('path:' + reverse()+path + rreverse()))
+        self.log.info('swagger server sinked\n\t{}'.format('path:' + reverse() + path + rreverse()))
         if ui:
             self.api = SwaggerUIStaticMiddleware(self.api, swagger_file=self.static_path + '/' + new_file,
                                                  url_prefix=path, language=ui_language, theme=theme)
-            self.log.info('swagger ui static middleware loaded\n\t{}'.format('url_prefix(static_path):'+reverse()+self.static_path)+rreverse())
+            self.log.info('swagger ui static middleware loaded\n\t{}'.format(
+                'url_prefix(static_path):' + reverse() + self.static_path) + rreverse())
         return self
 
     # deprecated

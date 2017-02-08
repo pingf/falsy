@@ -169,7 +169,7 @@ def rastyle():
     return wrap(TERMCC_RESET_ALL_STYLE)
 
 
-def racolor():
+def rafore():
     return wrap(TERMCC_RESET_ALL_FORE)
 
 

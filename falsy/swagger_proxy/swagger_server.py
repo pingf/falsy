@@ -36,7 +36,7 @@ class SwaggerServer:
         self.specs = {}  # Meta()
         self.custom_error_map = errors
         self.op_loader = OperatorLoader()
-        self.log = JLog().bind('falsy')
+        self.log = JLog().bind()
 
     def __call__(self, req, resp):  # , **kwargs):
         self.log.debug('remote_addr:{}, uri:{}, method:{}'.format(req.remote_addr, req.uri, req.method))

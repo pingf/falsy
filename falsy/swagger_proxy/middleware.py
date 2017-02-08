@@ -16,7 +16,7 @@ class CommonWSGIMiddleware(object):
         self.falcon_api = falcon_api
         self.app = app
         self.url_prefix = url_prefix.lstrip('/')
-        self.log = JLog().bind('falsy')
+        self.log = JLog().bind()
 
     def __call__(self, environ, start_response):
         path_info = environ['PATH_INFO']
@@ -31,7 +31,7 @@ class CommonStaticMiddleware(object):
         self.static_dir = static_dir
         self.url_prefix = url_prefix.lstrip('/')
         self.path_dir = os.path.abspath(static_dir)
-        self.log = JLog().bind('falsy')
+        self.log = JLog().bind()
 
     def __call__(self, environ, start_response):
         path_info = environ['PATH_INFO']

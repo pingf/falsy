@@ -1,6 +1,6 @@
 from falsy.jlog.jlog import JLog
 
-log = JLog().bind('falsy')
+log = JLog().bind()
 
 def get_it(name):
     log.debug('get it')

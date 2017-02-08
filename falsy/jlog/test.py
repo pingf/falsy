@@ -31,7 +31,7 @@ def test1():
     # raise Exception('haha')
 
 if __name__ == '__main__':
-    log = JLog().setup().bind('falsy')
+    log = JLog().setup().bind()
     log.debug('hehe')
     log.info('hehe')
     log.error('noshow')

@@ -5,13 +5,9 @@ import logging
 from falsy.dynamic_import import get_function_from_name
 from falsy.jlog.jlog import JLog
 
-logging.basicConfig(level=logging.INFO)
-log = logging.getLogger(__name__)
-
-
 class OperatorLoader:
     def __init__(self):
-        self.log = JLog().bind('falsy')
+        self.log = JLog().bind()
 
     def load_base(self, spec):
         bid = spec.get('beforeId')
