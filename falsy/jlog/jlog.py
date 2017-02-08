@@ -18,6 +18,8 @@ class JLog:
     def setup(self, **kwargs):
         highlights = kwargs.get('highlights')
         logfile = kwargs.get('logfile', 'falsy.log')
+        file_level = kwargs.get('file_level', 'INFO')
+        console_level = kwargs.get('console_level', 'DEBUG')
         handlers = kwargs.get('handlers', ['file', 'console'])
         config = {
             'version': 1,
@@ -53,14 +55,14 @@ class JLog:
             },
             'handlers': {
                 'file': {
-                    'level': 'INFO',
+                    'level': file_level,
                     'filters': None,
                     'class': 'logging.handlers.TimedRotatingFileHandler',
                     'filename': logfile,
                     'formatter': 'file'
                 },
                 'console': {
-                    'level': 'DEBUG',
+                    'level': console_level,
                     'filters': ['trace_filter', 'highlight_filter'],
                     'class': 'logging.StreamHandler',
                     'stream': 'ext://sys.stdout',

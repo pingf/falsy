@@ -1,3 +1,5 @@
+import base64
+
 import falcon
 import json
 import logging
@@ -98,9 +100,15 @@ class OperatorLoader:
 
         check_funcs = {
             'string': lambda p: req.get_param(p),
+            'password': lambda p: req.get_param(p),
+            'byte': lambda p: base64.b64decode(req.get_param(p)),
             'integer': lambda p: req.get_param_as_int(p),
+            'long': lambda p: req.get_param_as_int(p),
             'float': lambda p: float(req.get_param(p)),
+            'double': lambda p: float(req.get_param(p)),
             'array': lambda p: req.get_param_as_list(p),
+            'object': lambda p: req.get_param_as_dict(p),
+            'boolean': lambda p: req.get_param_as_bool(p),
         }
         value = None
         try:
@@ -123,8 +131,13 @@ class OperatorLoader:
         default_func = lambda v: v if type_ is not None else None
         check_funcs = {
             'string': lambda v: str(v),
+            'password': lambda v: str(v),
+            'byte': lambda v: base64.b64decode(str(v)),
             'integer': lambda v: int(v),
+            'long': lambda v: int(v),
             'float': lambda v: float(v),
+            'double': lambda v: float(v),
+            'boolean': lambda v: bool(v),
         }
         if param.get('required') and value is None:
             raise falcon.HTTPMissingParam(name)
@@ -158,11 +171,18 @@ class OperatorLoader:
 
         check_funcs = {
             'string': lambda v: str(v),
+            'password': lambda v: str(v),
+            'byte': lambda v: base64.b64decode(str(v)),
             'integer': lambda v: int(v),
+            'long': lambda v: int(v),
             'float': lambda v: float(v),
+            'double': lambda v: float(v),
+            'boolean': lambda v: bool(v),
             'array': array_check,
             'object': object_check,
         }
+
+
 
         try:
             value = check_funcs.get(type_, default_func)(value)
@@ -196,8 +216,13 @@ class OperatorLoader:
 
         check_funcs = {
             'string': lambda v: str(v),
+            'password': lambda v: str(v),
+            'byte': lambda v: base64.b64decode(str(v)),
             'integer': lambda v: int(v),
+            'long': lambda v: int(v),
             'float': lambda v: float(v),
+            'double': lambda v: float(v),
+            'boolean': lambda v: bool(v),
             'array': array_check,
             'object': object_check,
         }
