@@ -84,6 +84,10 @@ class JLog:
         self.logger = logging.getLogger(self.logname)
         return self
 
+    def bind2(self, logger):
+        self.logger = logger
+        return self
+
     def debug(self, msg, *args, **kwargs):
         return self.logger.debug(msg, *args, **kwargs)
 
