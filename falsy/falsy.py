@@ -11,8 +11,8 @@ from falsy.termcc.termcc import lgreen, bold, reset, italic, cc, red, rgreen, rl
 
 class FALSY:
     def __init__(self, falcon_api=None,
-                 static_path='static', static_dir='static', high_log=None):
-        self.log = JLog().setup(highlights=high_log).bind()
+                 static_path='static', static_dir='static', high_log=None, ex_log=None):
+        self.log = JLog().setup(highlights=high_log, extra_loggers=ex_log).bind()
         self.log.info(cc('falsy init', fore=77, styles=['italic', 'underlined', 'reverse']))
 
         self.api = self.falcon_api = falcon_api or falcon.API()

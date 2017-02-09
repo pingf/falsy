@@ -21,6 +21,7 @@ class JLog:
         file_level = kwargs.get('file_level', 'INFO')
         console_level = kwargs.get('console_level', 'DEBUG')
         handlers = kwargs.get('handlers', ['file', 'console'])
+        extra_loggers = kwargs.get('extra_loggers')
         config = {
             'version': 1,
             'disable_existing_loggers': False,
@@ -77,6 +78,8 @@ class JLog:
                 },
             }
         }
+        if extra_loggers:
+            config['loggers'].update(extra_loggers)
         logging.config.dictConfig(config)
         return self
 
@@ -84,8 +87,8 @@ class JLog:
         self.logger = logging.getLogger(self.logname)
         return self
 
-    def bind2(self, logger):
-        self.logger = logger
+    def bind2(self, logname):
+        self.logger = logging.getLogger(logname)
         return self
 
     def debug(self, msg, *args, **kwargs):
