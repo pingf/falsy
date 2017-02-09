@@ -55,7 +55,7 @@ class FALSY:
                 config = fr.read()
                 server.load_specs(config)
                 with open(new_path, 'w') as fw:
-                    config = self.remove_error_info(config)
+                    config = json.loads(self.remove_error_info(config))
                     json.dump(config, fw, sort_keys=True, indent=4)
             self.log.info('swagger file generated(from json file)\n\t{}'.format(
                 'new_path:' + reverse() + new_path + rreverse()))
