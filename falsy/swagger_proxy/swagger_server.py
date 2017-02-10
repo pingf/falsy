@@ -94,55 +94,54 @@ class SwaggerServer:
 
     def dispatch(self, req, resp):
         base_before, base_after, base_excp = self.op_loader.load_base(self.specs)
-        try:
-            if base_before:
-                base_before(req=req, resp=resp)
-            for uri_regex, spec in self.specs.items():
-                try:
-                    route_signature = '/' + req.method.lower() + req.relative_uri
-                    if route_signature.find('?') > 0:
-                        route_signature = route_signature[:route_signature.find('?')]
-                    if type(uri_regex) == str:
-                        continue
-                    match = uri_regex.match(route_signature)
-                    if match:
-                        spec['route_signature'] = route_signature
-                        req.spec = copy.deepcopy(spec)
-                        handler, params, before, after, excp, mode = self.op_loader.load(req=req, spec=spec,
-                                                                                         matched_uri=match)
-                        handler_return = None
-                        try:
-                            if before:
-                                before(req=req, resp=resp, **params)
+        for uri_regex, spec in self.specs.items():
+            try:
+                route_signature = '/' + req.method.lower() + req.relative_uri
+                if route_signature.find('?') > 0:
+                    route_signature = route_signature[:route_signature.find('?')]
+                if type(uri_regex) == str:
+                    continue
+                spec['route_signature'] = route_signature
+                req.spec = copy.deepcopy(spec)
 
-                            if mode == 'raw':
-                                handler_return = handler(req=req, resp=resp)
+                match = uri_regex.match(route_signature)
+                if match:
+                    handler, params, before, after, excp, mode = self.op_loader.load(req=req, spec=spec,
+                                                                                     matched_uri=match)
+                    handler_return = None
+                    try:
+                        if base_before:
+                            base_before(req=req, resp=resp, **params)
+                        if before:
+                            before(req=req, resp=resp, **params)
+
+                        if mode == 'raw':
+                            handler_return = handler(req=req, resp=resp)
+                        else:
+                            if mode == 'more':
+                                handler_return = handler(req=req, resp=resp, **params)
                             else:
-                                if mode == 'more':
-                                    handler_return = handler(req=req, resp=resp, **params)
-                                else:
-                                    handler_return = handler(**params)
+                                handler_return = handler(**params)
 
-                                content_type = self.produces(spec.get('produces'), self.specs.get('produces'))
-                                self.process_response(req, resp, handler_return, content_type)
+                            content_type = self.produces(spec.get('produces'), self.specs.get('produces'))
+                            self.process_response(req, resp, handler_return, content_type)
 
-                            if after:
-                                after(req=req, resp=resp, response=handler_return, **params)
-                        except Exception as e:
-                            if excp is None:
-                                raise e
-                            if excp is not None:
-                                excp(req=req, resp=resp, error=e)
-                        return
-                except AttributeError as e:
-                    self.log.error_trace("attributte error: {}".format(e))
-            if base_after:
-                base_after(req=req, resp=resp)
-        except Exception as e:
-            if base_excp is None:
-                raise e
-            if base_excp is not None:
-                base_excp(req=req, resp=resp, error=e)
+                        if after:
+                            after(req=req, resp=resp, response=handler_return, **params)
+                        if base_after:
+                            base_after(req=req, resp=resp, **params)
+                    except Exception as e:
+                        if excp is None:
+                            raise e
+                        if excp is not None:
+                            excp(req=req, resp=resp, error=e)
+                        if base_excp is None:
+                            raise e
+                        if base_excp is not None:
+                            base_excp(req=req, resp=resp, error=e)
+                    return
+            except AttributeError as e:
+                self.log.error_trace("attributte error: {}".format(e))
         self.log.info("url does not match any route signature: {}".format(route_signature))
         raise falcon.HTTPNotFound()
 

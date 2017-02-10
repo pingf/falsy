@@ -8,12 +8,12 @@ produces:
   - text/html
   - application/json
 basePath: "/v1"
+beforeId: demo.mm.ops.validate.mmcheck
 paths:
   '/hello':
     get:
       tags: [GET]
       operationId: demo.mm.ops.hello.get_it
-      beforeId: demo.mm.ops.validate.mmcheck
       summary: 测试get请求,mmcheck,小于６字符会报错
       parameters:
         - name: name
@@ -26,7 +26,6 @@ paths:
     post:
       tags: [POST]
       operationId: demo.mm.ops.hello.post_it
-      beforeId: demo.mm.ops.validate.mmcheck
       summary: 测试get请求,小于4字符会报错
       parameters:
         - name: name

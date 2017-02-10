@@ -4,7 +4,7 @@ from falsy.utils.meta import args2schema
 
 route_args = {
     '/get/v1/hello': {
-        'name': fields.Str(validate=lambda p: len(p) >= 6)
+        'name': fields.Str(validate=lambda p: len(p) >= 6, required=True),
     },
     '/post/v1/hello': {
         'name': fields.Str(validate=lambda p: len(p) >= 4)
@@ -13,8 +13,9 @@ route_args = {
 
 
 def mmcheck(req, resp, **kwargs):
-    args = route_args.get(req.spec['route_signature'])
-    schema = args2schema(args)
+    sig = req.spec['route_signature']
+    args = route_args.get(sig)
+    schema = args2schema(args, raise_error=False)
     data, errors = schema.load(kwargs)
     if errors:
         raise Exception(errors)
