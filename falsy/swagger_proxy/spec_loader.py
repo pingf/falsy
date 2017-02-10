@@ -50,6 +50,7 @@ class SpecLoader:
             if attribute in ['beforeId', 'afterId', 'operationId', 'validationId', 'exceptionId']:
                 attribute_content = self.load_handler(attribute_content)
             self.load_attributes(attribute, attribute_content, swagger_spec, uri_regex)
+            self.specs[uri_regex]['path'] = path
 
     def load_attributes(self, attribute, attribute_content, swagger_spec, uri_regex):
         self.specs[uri_regex][attribute] = attribute_content

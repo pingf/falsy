@@ -1,3 +1,5 @@
+import copy
+
 import falcon
 import json
 
@@ -104,6 +106,8 @@ class SwaggerServer:
                         continue
                     match = uri_regex.match(route_signature)
                     if match:
+                        spec['route_signature'] = route_signature
+                        req.spec = copy.deepcopy(spec)
                         handler, params, before, after, excp, mode = self.op_loader.load(req=req, spec=spec,
                                                                                          matched_uri=match)
                         handler_return = None
