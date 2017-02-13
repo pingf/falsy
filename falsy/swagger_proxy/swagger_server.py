@@ -131,14 +131,12 @@ class SwaggerServer:
                         if base_after:
                             base_after(req=req, resp=resp, **params)
                     except Exception as e:
-                        if excp is None:
-                            raise e
-                        if excp is not None:
-                            excp(req=req, resp=resp, error=e)
-                        if base_excp is None:
+                        if base_excp is None and excp is None:
                             raise e
                         if base_excp is not None:
                             base_excp(req=req, resp=resp, error=e)
+                        if excp is not None:
+                            excp(req=req, resp=resp, error=e)
                     return
             except AttributeError as e:
                 self.log.error_trace("attributte error: {}".format(e))
