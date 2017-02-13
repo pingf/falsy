@@ -84,4 +84,4 @@ class FALSY:
         if isinstance(d, list):
             return [self.remove_error_info(v) for v in d]
         return {k: self.remove_error_info(v) for k, v in d.items()
-                if k not in {'validationId', 'beforeId', 'afterId', 'exceptionId', 'operationId', 'operationMode'}}
+                if k not in {'validationId', 'beforeId', 'afterId', 'exceptionId', 'operationId', 'finalId', 'operationMode'}}

@@ -15,7 +15,8 @@ class OperatorLoader:
         bid = spec.get('beforeId')
         aid = spec.get('afterId')
         eid = spec.get('exceptionId')
-        return bid, aid, eid
+        fid = spec.get('finalId')
+        return bid, aid, eid, fid
 
     def load(self, req, spec, matched_uri):
         vid = spec.get('validationId')
@@ -23,8 +24,9 @@ class OperatorLoader:
         oid = spec.get('operationId')
         bid = spec.get('beforeId')
         eid = spec.get('exceptionId')
+        fid = spec.get('finalId')
         omode = spec.get('operationMode')
-        return oid, self.load_params(req, spec.get('parameters'), matched_uri, spec, vid), bid, aid, eid, omode
+        return oid, self.load_params(req, spec.get('parameters'), matched_uri, spec, vid), bid, aid, eid, fid, omode
 
     def load_params(self, req, params, matched_uri, spec, validator):
         if params:

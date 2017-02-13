@@ -31,6 +31,7 @@ class SpecLoader:
             self.specs['beforeId'] = self.load_handler(swagger_spec.get('beforeId'))
             self.specs['afterId'] = self.load_handler(swagger_spec.get('afterId'))
             self.specs['exceptionId'] = self.load_handler(swagger_spec.get('exceptionId'))
+            self.specs['finalId'] = self.load_handler(swagger_spec.get('finalId'))
             for path, path_content in swagger_spec['paths'].items():
                 self.load_paths(path, path_content, swagger_spec)
         except:
@@ -47,7 +48,7 @@ class SpecLoader:
             '/' + method.lower() + swagger_spec['basePath'] + path)
         self.specs[uri_regex] = {'uri_fields': uri_fields}
         for attribute, attribute_content in method_content.items():
-            if attribute in ['beforeId', 'afterId', 'operationId', 'validationId', 'exceptionId']:
+            if attribute in ['beforeId', 'afterId', 'operationId', 'validationId', 'exceptionId', 'finalId']:
                 attribute_content = self.load_handler(attribute_content)
             self.load_attributes(attribute, attribute_content, swagger_spec, uri_regex)
             self.specs[uri_regex]['path'] = path

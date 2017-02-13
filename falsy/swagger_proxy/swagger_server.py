@@ -93,7 +93,7 @@ class SwaggerServer:
         return req.env['wsgi.url_scheme']+'://'+host
 
     def dispatch(self, req, resp):
-        base_before, base_after, base_excp = self.op_loader.load_base(self.specs)
+        base_before, base_after, base_excp, base_final = self.op_loader.load_base(self.specs)
         for uri_regex, spec in self.specs.items():
             try:
                 route_signature = '/' + req.method.lower() + req.relative_uri
@@ -106,7 +106,7 @@ class SwaggerServer:
 
                 match = uri_regex.match(route_signature)
                 if match:
-                    handler, params, before, after, excp, mode = self.op_loader.load(req=req, spec=spec,
+                    handler, params, before, after, excp, final, mode = self.op_loader.load(req=req, spec=spec,
                                                                                      matched_uri=match)
                     handler_return = None
                     try:
@@ -114,7 +114,6 @@ class SwaggerServer:
                             base_before(req=req, resp=resp, **params)
                         if before:
                             before(req=req, resp=resp, **params)
-
                         if mode == 'raw':
                             handler_return = handler(req=req, resp=resp)
                         else:
@@ -125,11 +124,11 @@ class SwaggerServer:
 
                             content_type = self.produces(spec.get('produces'), self.specs.get('produces'))
                             self.process_response(req, resp, handler_return, content_type)
-
                         if after:
                             after(req=req, resp=resp, response=handler_return, **params)
                         if base_after:
                             base_after(req=req, resp=resp, **params)
+
                     except Exception as e:
                         if base_excp is None and excp is None:
                             raise e
@@ -137,6 +136,10 @@ class SwaggerServer:
                             base_excp(req=req, resp=resp, error=e)
                         if excp is not None:
                             excp(req=req, resp=resp, error=e)
+                    if final:
+                        final(req=req, resp=resp, response=handler_return, **params)
+                    if base_final:
+                        base_final(req=req, resp=resp, **params)
                     return
             except AttributeError as e:
                 self.log.error_trace("attributte error: {}".format(e))
