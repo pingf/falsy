@@ -1,0 +1,36 @@
+swagger: '2.0'
+info:
+  title: FALSY SIMPLE DEMO API
+  version: "0.1"
+consumes:
+  - application/json
+produces:
+  - text/html
+  - application/json
+basePath: "/v1"
+#exceptionId: demo.mm2.ops.hello.except_it
+paths:
+  '/hello':
+    get:
+      tags: [GET]
+      operationId: demo.mm2.ops.hello.get_it
+      summary: 测试get请求,mmcheck,小于６字符会报错
+      parameters:
+        - name: name
+          in: query
+          type: string
+      responses:
+        200:
+          description: Return response
+    post:
+      tags: [POST]
+      operationId: demo.mm2.ops.hello.post_it
+      summary: 测试get请求,小于4字符会报错
+      parameters:
+        - name: name
+          in: query
+          type: string
+          default: 'jesse'
+      responses:
+        200:
+          description: Return response

@@ -7,7 +7,7 @@ consumes:
 produces:
   - text/html
   - application/json
-basePath: "/v1"
+basePath: "/"
 paths:
   '/hello':
     get:

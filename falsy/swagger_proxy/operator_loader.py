@@ -7,6 +7,7 @@ import logging
 from falsy.dynamic_import import get_function_from_name
 from falsy.jlog.jlog import JLog
 
+
 class OperatorLoader:
     def __init__(self):
         self.log = JLog().bind()
@@ -34,6 +35,8 @@ class OperatorLoader:
             for param in params:
                 name = param.get('name')
                 in_ = param.get('in')
+                default = param.get('default')
+                required = param.get('required')
                 # value = None
                 if in_ == 'query':
                     value = self.param_in_query(req, param)
@@ -45,9 +48,13 @@ class OperatorLoader:
                     value = self.param_in_header(req, spec, param)
                 else:
                     value = None
+
+                if default and value is None:
+                    value = default
                 vid = param.get('validationId')
                 self.custom_validate(vid, value)
-                results[name] = value
+                if required or value is not None:
+                    results[name] = value
             if len(results) == 0:
                 self.custom_validate_all(validator)
             else:
@@ -183,8 +190,6 @@ class OperatorLoader:
             'array': array_check,
             'object': object_check,
         }
-
-
 
         try:
             value = check_funcs.get(type_, default_func)(value)
