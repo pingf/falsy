@@ -14,3 +14,4 @@ AUTHORS
 .python-version
 **/*.log*
 **/demo/**/*.json
+test.py
