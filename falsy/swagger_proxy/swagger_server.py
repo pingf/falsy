@@ -33,12 +33,13 @@ def http_invalid_param_handler(req, resp, e):
 
 
 class SwaggerServer:
-    def __init__(self, errors=None):
+    def __init__(self, errors=None, cors_origin=None):
         self.default_content_type = 'application/json'
         self.specs = {}  # Meta()
         self.custom_error_map = errors
         self.op_loader = OperatorLoader()
         self.log = JLog().bind()
+        self.cors_origin = cors_origin
 
     def __call__(self, req, resp):  # , **kwargs):
         self.log.debug('remote_addr:{}, uri:{}, method:{}'.format(req.remote_addr, req.uri, req.method))
@@ -50,7 +51,8 @@ class SwaggerServer:
 
     def process(self, req, resp):
         if req.method == 'OPTIONS':
-            self.process_preflight_request(req, resp)
+            if self.cors_origin is not False:
+                self.process_preflight_request(req, resp)
             response_body = '\n'
 
             response_body += 'nothing here\n\n'
@@ -59,7 +61,8 @@ class SwaggerServer:
             resp.status = falcon.HTTP_200
             return
         try:
-            self.process_preflight_request(req, resp)
+            if self.cors_origin is not False:
+                self.process_preflight_request(req, resp)
             self.dispatch(req, resp)
         except Exception as e:
             self.log.error_trace('process failed')
@@ -89,8 +92,10 @@ class SwaggerServer:
         # resp.set_header('Access-Control-Max-Age', 1728000)  # 20 days
 
     def allowed_origin(self, req):
-        host = req.env['SERVER_NAME']+':'+req.env['SERVER_PORT']
-        return req.env['wsgi.url_scheme']+'://'+host
+        if type(self.cors_origin) == str and '.' in self.cors_origin:
+            return self.cors_origin
+        host = req.env['SERVER_NAME'] + ':' + req.env['SERVER_PORT']
+        return req.env['wsgi.url_scheme'] + '://' + host
 
     def dispatch(self, req, resp):
         base_before, base_after, base_excp, base_final = self.op_loader.load_base(self.specs)
@@ -107,7 +112,7 @@ class SwaggerServer:
                 match = uri_regex.match(route_signature)
                 if match:
                     handler, params, before, after, excp, final, mode = self.op_loader.load(req=req, spec=spec,
-                                                                                     matched_uri=match)
+                                                                                            matched_uri=match)
                     handler_return = None
                     try:
                         if base_before:

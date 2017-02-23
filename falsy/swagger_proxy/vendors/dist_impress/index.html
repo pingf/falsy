@@ -7,7 +7,7 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" async></script><![endif]-->
   <!--style type="text/css"></style-->
   <link rel="stylesheet" type="text/css" href="lib-1a1ca116de.css">
-  <link href="//cloud.typography.com/7971714/6011752/css/fonts.css" rel="stylesheet" type="text/css" />
+  <!--<link href="//cloud.typography.com/7971714/6011752/css/fonts.css" rel="stylesheet" type="text/css" />-->
   <link href="min-2aa5fc9ecf.css" rel="stylesheet" /> </head>
 
 <body id="SwaggerUi" class="page-docs" style="zoom: 1;">
@@ -141,11 +141,15 @@
           if (swaggerUi.options.apiKey) {
             $('#input_apiKey').val(swaggerUi.options.apiKey);
           }
+
+          $("#input_apiKey").change(function(){
+            addApiKeyAuthorization($('#input_apiKey')[0].value);
+          });
           // HACK 2016-05-02 @theopak
-          if (accessToken) {
-            $('#input_apiKey')[0].value = accessToken.trim();
-            addApiKeyAuthorization(accessToken);
-          }
+//          if (accessToken) {
+//            $('#input_apiKey')[0].value = accessToken.trim();
+//            addApiKeyAuthorization(accessToken);
+//          }
           $("[data-toggle='tooltip']").tooltip();
         },
         onFailure: function(data) {
@@ -176,6 +180,9 @@
         if (key && key.trim() != "") {
           var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("Authorization", "Bearer " + key, "header");
           window.swaggerUi.api.clientAuthorizations.add("ACCESS_TOKEN_IN_URL", apiKeyAuth);
+        }else{
+          //modified for change
+          window.swaggerUi.api.clientAuthorizations.remove("ACCESS_TOKEN_IN_URL")
         }
       }
 
