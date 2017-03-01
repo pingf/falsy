@@ -33,7 +33,7 @@ class FALSY:
         self.log.info('common wsgi middleware loaded\n\t{}'.format('url_prefix:' + self.static_path))
         return self
 
-    def swagger(self, filename, ui=True, new_file=None, ui_language='en', theme='impress', errors=None):
+    def swagger(self, filename, ui=True, new_file=None, ui_language='en', theme='normal', errors=None):
         server = SwaggerServer(errors=errors)
         self.log.info('swagger server init')
 

@@ -171,12 +171,14 @@ class OperatorLoader:
         default_func = lambda v: v if type_ is not None else None
 
         def array_check(value):
-            doc = json.loads(value)
-            return doc
+            if type(value) == str:
+                return json.loads(value)
+            return value
 
         def object_check(value):
-            doc = json.loads(value)
-            return doc
+            if type(value) == str:
+                return json.loads(value)
+            return value
 
         check_funcs = {
             'string': lambda v: str(v),
@@ -214,12 +216,14 @@ class OperatorLoader:
         default_func = lambda v: v if type_ is not None else None
 
         def array_check(value):
-            doc = json.loads(value)
-            return doc
+            if type(value) == str:
+                return json.loads(value)
+            return value
 
         def object_check(value):
-            doc = json.loads(value)
-            return doc
+            if type(value) == str:
+                return json.loads(value)
+            return value
 
         check_funcs = {
             'string': lambda v: str(v),
