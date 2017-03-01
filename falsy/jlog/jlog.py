@@ -15,13 +15,20 @@ class JLog:
         self.logger = None
         self.logname = name
 
-    def setup(self, **kwargs):
-        highlights = kwargs.get('highlights')
-        logfile = kwargs.get('logfile', 'falsy.log')
-        file_level = kwargs.get('file_level', 'INFO')
-        console_level = kwargs.get('console_level', 'DEBUG')
-        handlers = kwargs.get('handlers', ['file', 'console'])
-        extra_loggers = kwargs.get('extra_loggers')
+    def setup(self, config=None):
+        if config is not None:
+            highlights = config.get('highlights')
+            logfile = config.get('logfile', 'falsy.log')
+            file_level = config.get('file_level', 'DEBUG')
+            console_level = config.get('console_level', 'DEBUG')
+            handlers = config.get('handlers', ['file', 'console'])
+            extra_loggers = config.get('extra_loggers')
+        else:
+            highlights = None
+            logfile = 'falsy.log'
+            file_level = console_level = 'DEBUG'
+            handlers = ['file', 'console']
+            extra_loggers = None
         config = {
             'version': 1,
             'disable_existing_loggers': False,

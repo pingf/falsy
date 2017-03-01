@@ -11,8 +11,11 @@ from falsy.termcc.termcc import lgreen, bold, reset, italic, cc, red, rgreen, rl
 
 class FALSY:
     def __init__(self, falcon_api=None,
-                 static_path='static', static_dir='static', high_log=None, ex_log=None):
-        self.log = JLog().setup(highlights=high_log, extra_loggers=ex_log).bind()
+                 static_path='static', static_dir='static', log_config=None):
+        if log_config is None:
+            self.log = JLog().setup().bind()
+        else:
+            self.log = JLog().setup(config=log_config).bind()
         self.log.info(cc('falsy init', fore=77, styles=['italic', 'underlined', 'reverse']))
 
         self.api = self.falcon_api = falcon_api or falcon.API()
@@ -30,7 +33,7 @@ class FALSY:
         self.log.info('common wsgi middleware loaded\n\t{}'.format('url_prefix:' + self.static_path))
         return self
 
-    def swagger(self, filename, ui=False, new_file=None, ui_language='en', theme='impress', errors=None):
+    def swagger(self, filename, ui=True, new_file=None, ui_language='en', theme='impress', errors=None):
         server = SwaggerServer(errors=errors)
         self.log.info('swagger server init')
 

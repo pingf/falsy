@@ -146,9 +146,9 @@ class SwaggerServer:
                     if base_final:
                         base_final(req=req, resp=resp, **params)
                     return
-            except AttributeError as e:
-                self.log.error_trace("attributte error: {}".format(e))
-        self.log.info("url does not match any route signature: {}".format(route_signature))
+            except Exception as e:
+                self.log.error_trace("match error: {}".format(e))
+        self.log.info("url does not match any route signature or match error: {}".format(route_signature))
         raise falcon.HTTPNotFound()
 
     def process_response(self, req, resp, handler_return, content_type='application/json'):
