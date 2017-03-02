@@ -1,11 +1,19 @@
+import ast
 import base64
 
 import falcon
 import json
-import logging
 
-from falsy.dynamic_import import get_function_from_name
 from falsy.jlog.jlog import JLog
+
+
+def json_check(value):
+    if type(value) == str:
+        try:
+            value = json.loads(value)
+        except json.decoder.JSONDecodeError as e:
+            value = ast.literal_eval(value)
+    return value
 
 
 class OperatorLoader:
@@ -170,16 +178,6 @@ class OperatorLoader:
 
         default_func = lambda v: v if type_ is not None else None
 
-        def array_check(value):
-            if type(value) == str:
-                return json.loads(value)
-            return value
-
-        def object_check(value):
-            if type(value) == str:
-                return json.loads(value)
-            return value
-
         check_funcs = {
             'string': lambda v: str(v),
             'password': lambda v: str(v),
@@ -189,8 +187,8 @@ class OperatorLoader:
             'float': lambda v: float(v),
             'double': lambda v: float(v),
             'boolean': lambda v: bool(v),
-            'array': array_check,
-            'object': object_check,
+            'array': json_check,
+            'object': json_check,
         }
 
         try:
@@ -215,16 +213,6 @@ class OperatorLoader:
             raise falcon.HTTPMissingParam(name)
         default_func = lambda v: v if type_ is not None else None
 
-        def array_check(value):
-            if type(value) == str:
-                return json.loads(value)
-            return value
-
-        def object_check(value):
-            if type(value) == str:
-                return json.loads(value)
-            return value
-
         check_funcs = {
             'string': lambda v: str(v),
             'password': lambda v: str(v),
@@ -234,8 +222,8 @@ class OperatorLoader:
             'float': lambda v: float(v),
             'double': lambda v: float(v),
             'boolean': lambda v: bool(v),
-            'array': array_check,
-            'object': object_check,
+            'array': json_check,
+            'object': json_check,
         }
         try:
             value = check_funcs.get(type_, default_func)(value)
