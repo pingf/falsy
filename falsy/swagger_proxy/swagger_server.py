@@ -147,7 +147,8 @@ class SwaggerServer:
                         base_final(req=req, resp=resp, **params)
                     return
             except Exception as e:
-                self.log.error_trace("match error: {}".format(e))
+                self.log.error_trace("process error: {}".format(e))
+                raise falcon.HTTPServiceUnavailable()
         self.log.info("url does not match any route signature or match error: {}".format(route_signature))
         raise falcon.HTTPNotFound()
 
