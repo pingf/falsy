@@ -9,7 +9,7 @@ from falsy.swagger_proxy.spec_loader import SpecLoader
 
 
 def default_error_handler(req, resp, e):
-    resp.body = json.dumps({'title': type(e), 'description': str(e)})
+    resp.body = json.dumps({'title': str(type(e)), 'description': str(e)})
     resp.status = falcon.HTTP_500
     resp.content_type = 'application/json'
 
@@ -159,7 +159,7 @@ class SwaggerServer:
                     return
             except Exception as e:
                 self.log.error_trace("process error: {}".format(e))
-                raise falcon.HTTPInternalServerError(title=type(e), description=str(e))
+                raise falcon.HTTPInternalServerError(title=str(type(e)), description=str(e))
         self.log.info("url does not match any route signature or match error: {}".format(route_signature))
         raise falcon.HTTPNotFound()
 
