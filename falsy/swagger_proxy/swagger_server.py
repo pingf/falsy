@@ -9,25 +9,35 @@ from falsy.swagger_proxy.spec_loader import SpecLoader
 
 
 def default_error_handler(req, resp, e):
-    resp.body = json.dumps({'error': str(e)})
+    resp.body = json.dumps({'title': type(e), 'description': str(e)})
     resp.status = falcon.HTTP_500
     resp.content_type = 'application/json'
 
 
-def http_not_found_handler(req, resp, e):
-    resp.body = e.title
-    resp.status = e.status
-    resp.content_type = 'application/json'
+# def http_not_found_handler(req, resp, e):
+#     resp.body = e.title
+#     resp.status = e.status
+#     resp.content_type = 'application/json'
+#
+#
+# def http_missing_param_handler(req, resp, e):
+#     resp.body = json.dumps({'error': e.title + ':' + ' '.join([p for p in e.args])})
+#     resp.status = e.status
+#     resp.content_type = 'application/json'
+#
+#
+# def http_invalid_param_handler(req, resp, e):
+#     resp.body = json.dumps({'error': e.title + ':' + ' '.join([p for p in e.args])})
+#     resp.status = e.status
+#     resp.content_type = 'application/json'
 
 
-def http_missing_param_handler(req, resp, e):
-    resp.body = json.dumps({'error': e.title + ':' + ' '.join([p for p in e.args])})
-    resp.status = e.status
-    resp.content_type = 'application/json'
-
-
-def http_invalid_param_handler(req, resp, e):
-    resp.body = json.dumps({'error': e.title + ':' + ' '.join([p for p in e.args])})
+def http_falcon_handler(req, resp, e):
+    resp.body = json.dumps({'title': e.title,
+                            'description': e.description,
+                            'status': e.status,
+                            'code': e.code,
+                            'args': ''.join([p for p in e.args])})
     resp.status = e.status
     resp.content_type = 'application/json'
 
@@ -68,9 +78,10 @@ class SwaggerServer:
             self.log.error_trace('process failed')
             error_type = type(e)
             error_map = {
-                falcon.errors.HTTPNotFound: http_not_found_handler,
-                falcon.errors.HTTPMissingParam: http_missing_param_handler,
-                falcon.errors.HTTPInvalidParam: http_invalid_param_handler,
+                falcon.errors.HTTPNotFound: http_falcon_handler,
+                falcon.errors.HTTPMissingParam: http_falcon_handler,
+                falcon.errors.HTTPInvalidParam: http_falcon_handler,
+                falcon.errors.HTTPInternalServerError: http_falcon_handler,
             }
             if self.custom_error_map:
                 error_map.update(self.custom_error_map)
@@ -148,7 +159,7 @@ class SwaggerServer:
                     return
             except Exception as e:
                 self.log.error_trace("process error: {}".format(e))
-                raise falcon.HTTPServiceUnavailable()
+                raise falcon.HTTPInternalServerError(title=type(e), description=str(e))
         self.log.info("url does not match any route signature or match error: {}".format(route_signature))
         raise falcon.HTTPNotFound()
 
@@ -161,9 +172,9 @@ class SwaggerServer:
             http_code = handler_return[1]
             if len(handler_return) > 2:
                 content_type = handler_return[2]
-            # else:
-            #     if type(data) == dict or type(data) == list:
-            #         content_type = 'application/json'
+                # else:
+                #     if type(data) == dict or type(data) == list:
+                #         content_type = 'application/json'
         else:
             data = handler_return
             http_code = falcon.HTTP_200
