@@ -231,5 +231,5 @@ class OperatorLoader:
         except ValueError as e:
             self.log.error_trace(
                 'value error when check param in body - name: {}, type: {}, value: {}'.format(name, type_, value))
-            raise falcon.HTTPInvalidParam('invalid param in path', name)
+            raise falcon.HTTPInvalidParam('invalid param in body', name)
         return value
