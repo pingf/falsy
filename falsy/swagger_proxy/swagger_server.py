@@ -36,7 +36,6 @@ def http_falcon_handler(req, resp, e):
     resp.body = json.dumps({'title': e.title,
                             'description': e.description,
                             'status': e.status,
-                            'code': e.code,
                             'args': ''.join([p for p in e.args])})
     resp.status = e.status
     resp.content_type = 'application/json'
