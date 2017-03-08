@@ -102,7 +102,7 @@ class SwaggerServer:
         # resp.set_header('Access-Control-Max-Age', 1728000)  # 20 days
 
     def allowed_origin(self, req):
-        if type(self.cors_origin) == str and '.' in self.cors_origin:
+        if type(self.cors_origin) == str:
             return self.cors_origin
         host = req.env['SERVER_NAME'] + ':' + req.env['SERVER_PORT']
         return req.env['wsgi.url_scheme'] + '://' + host
