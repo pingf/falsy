@@ -116,7 +116,7 @@ class SwaggerUIStaticMiddleware(object):
                 with open(path, 'r') as f:
                     content = f.read()
                     template = Template(content)
-                    rendered = template.render({'api_url': 'http://' + environ['SERVER_NAME']+':'+environ['SERVER_PORT'] + '/' + self.swagger_file,
+                    rendered = template.render({'api_url': environ['wsgi.url_scheme']+'://' + environ['SERVER_NAME']+':'+environ['SERVER_PORT'] + '/' + self.swagger_file,
                                                 'language': self.language})
                 resp = [('Content-type', 'text/html')]
                 start_response("200 OK", resp)
