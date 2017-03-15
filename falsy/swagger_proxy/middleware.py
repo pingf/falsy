@@ -96,7 +96,10 @@ class SwaggerUIStaticMiddleware(object):
         )
         self.swagger_file = swagger_file.strip('/')
         self.language = language
-        self.api_url = api_url.rstrip('/') if api_url.endswith('/') else api_url
+        if type(api_url) == str:
+            self.api_url = api_url.rstrip('/') if api_url.endswith('/') else api_url
+        else:
+            self.api_url = None
 
     def __call__(self, environ, start_response):
         path_info = environ.get('PATH_INFO')
@@ -121,7 +124,8 @@ class SwaggerUIStaticMiddleware(object):
                         rendered = template.render({'api_url': self.api_url + '/' + self.swagger_file,
                                                     'language': self.language})
                     else:
-                        rendered = template.render({'api_url': environ['wsgi.url_scheme']+'://' + environ['SERVER_NAME']+':'+environ['SERVER_PORT'] + '/' + self.swagger_file,
+                        rendered = template.render({'api_url': environ['wsgi.url_scheme'] + '://' + environ[
+                            'SERVER_NAME'] + ':' + environ['SERVER_PORT'] + '/' + self.swagger_file,
                                                     'language': self.language})
                 resp = [('Content-type', 'text/html')]
                 start_response("200 OK", resp)
