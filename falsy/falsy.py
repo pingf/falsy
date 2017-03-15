@@ -33,7 +33,7 @@ class FALSY:
         self.log.info('common wsgi middleware loaded\n\t{}'.format('url_prefix:' + self.static_path))
         return self
 
-    def swagger(self, filename, ui=True, new_file=None, ui_language='en', theme='normal', errors=None, cors_origin=None):
+    def swagger(self, filename, ui=True, new_file=None, ui_language='en', theme='normal', errors=None, cors_origin=None, api_url=None):
         server = SwaggerServer(errors=errors, cors_origin=cors_origin)
         self.log.info('swagger server init')
 
@@ -68,7 +68,7 @@ class FALSY:
         self.log.info('swagger server sinked\n\t{}'.format('path:' + reverse() + path + rreverse()))
         if ui:
             self.api = SwaggerUIStaticMiddleware(self.api, swagger_file=self.static_path + '/' + new_file,
-                                                 url_prefix=path, language=ui_language, theme=theme)
+                                                 url_prefix=path, language=ui_language, theme=theme, api_url=api_url)
             self.log.info('swagger ui static middleware loaded\n\t{}'.format(
                 'url_prefix(static_path):' + reverse() + self.static_path) + rreverse())
         return self
