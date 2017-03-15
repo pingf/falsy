@@ -77,7 +77,7 @@ class CommonStaticMiddleware(object):
 
 
 class SwaggerUIStaticMiddleware(object):
-    def __init__(self, app, swagger_file='swagger.json', url_prefix='v1', language='en', theme='normal'):
+    def __init__(self, app, swagger_file='swagger.json', url_prefix='v1', language='en', theme='normal', api_url=None):
         self.app = app
         if theme == 'material' or theme == 'angular':
             self.static_dir = 'vendors/dist_material'
@@ -96,6 +96,7 @@ class SwaggerUIStaticMiddleware(object):
         )
         self.swagger_file = swagger_file.strip('/')
         self.language = language
+        self.api_url = api_url.rstrip('/') if api_url.endswith('/') else api_url
 
     def __call__(self, environ, start_response):
         path_info = environ.get('PATH_INFO')
@@ -116,8 +117,12 @@ class SwaggerUIStaticMiddleware(object):
                 with open(path, 'r') as f:
                     content = f.read()
                     template = Template(content)
-                    rendered = template.render({'api_url': environ['wsgi.url_scheme']+'://' + environ['SERVER_NAME']+':'+environ['SERVER_PORT'] + '/' + self.swagger_file,
-                                                'language': self.language})
+                    if self.api_url:
+                        rendered = template.render({'api_url': self.api_url + '/' + self.swagger_file,
+                                                    'language': self.language})
+                    else:
+                        rendered = template.render({'api_url': environ['wsgi.url_scheme']+'://' + environ['SERVER_NAME']+':'+environ['SERVER_PORT'] + '/' + self.swagger_file,
+                                                    'language': self.language})
                 resp = [('Content-type', 'text/html')]
                 start_response("200 OK", resp)
                 return [rendered.encode('utf-8')]
