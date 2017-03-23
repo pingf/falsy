@@ -2,7 +2,7 @@ import functools
 import importlib
 
 
-def get_function_from_name(function_name):
+def load(function_name):
     if not function_name:
         return None
     module_name, attr_path = function_name.rsplit('.', 1)

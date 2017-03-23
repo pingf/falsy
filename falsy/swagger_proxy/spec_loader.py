@@ -4,9 +4,10 @@ import falcon
 import json
 import logging
 
-from falsy.dynamic_import import get_function_from_name
 
 from falcon.routing import compile_uri_template
+
+from falsy.loader.func import load
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
@@ -71,4 +72,4 @@ class SpecLoader:
     def load_handler(self, name):
         if name is None:
             return None
-        return get_function_from_name(name)
+        return load(name)
