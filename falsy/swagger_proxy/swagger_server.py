@@ -171,9 +171,6 @@ class SwaggerServer:
             http_code = handler_return[1]
             if len(handler_return) > 2:
                 content_type = handler_return[2]
-                # else:
-                #     if type(data) == dict or type(data) == list:
-                #         content_type = 'application/json'
         else:
             data = handler_return
             http_code = falcon.HTTP_200
@@ -192,9 +189,9 @@ class SwaggerServer:
                     resp.body = json.dumps(pre_body) + data
             else:
                 resp.body = pre_body + json.dumps(data, indent=2) if 'json' in content_type else json.dumps(
-                    pre_body) + data
+                    pre_body) + str(data)
         else:
-            resp.body = json.dumps(data, indent=2) if 'json' in content_type else str(data)
+            resp.body = json.dumps(data, indent=2) if 'json' in content_type else data
         resp.content_type = content_type
         resp.status = http_code
 
