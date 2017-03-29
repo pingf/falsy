@@ -4,7 +4,7 @@ from falsy.netboy.request import request
 import asyncio as aio
 
 
-async def fetch(urls):
+async def boy(urls):
     targets = []
     for payload in urls:
         targets.append(request(payload))
