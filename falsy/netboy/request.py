@@ -2,6 +2,7 @@ from io import BytesIO
 
 import aiohttp
 import pycurl
+from bs4 import UnicodeDammit
 import re
 
 from falsy.loader.func import load
@@ -9,16 +10,33 @@ from falsy.netboy.curl_loop import CurlLoop
 
 DEFAULT_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm; Baiduspider/2.0; +http://www.baidu.com/search/spider.html) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80() Safari/537.36'
 
+# curl_easy_perform()
+#     |
+#     |--NAMELOOKUP
+#     |--|--CONNECT
+#     |--|--|--APPCONNECT
+#     |--|--|--|--PRETRANSFER
+#     |--|--|--|--|--STARTTRANSFER
+#     |--|--|--|--|--|--TOTAL
+#     |--|--|--|--|--|--REDIRECT
 
 def setup_curl_for_get(c, p, data_buf, headers=None):
     def header_function(header_line):
+        count = headers['count']
         header_line = header_line.decode('iso-8859-1')
 
-        if ':' not in header_line:
+        if ':' not in header_line and not header_line.startswith('HTTP'):
+            # print(header_line)
+            if '\r\n' in header_line:
+                headers['count'] += 1
+                headers['content'].append({})
             return
 
         # Break the header line into header name and value.
-        name, value = header_line.split(':', 1)
+        if ':' in header_line:
+            name, value = header_line.rstrip('\r\n').split(':', 1)
+        else:
+            name, value = header_line.rstrip('\r\n').split(' ', 1)
 
         # Remove whitespace that may be present.
         # Header lines include the trailing newline, and there may be whitespace
@@ -31,7 +49,10 @@ def setup_curl_for_get(c, p, data_buf, headers=None):
         name = name.lower()
 
         # Now we can actually record the header name and value.
-        headers[name] = value
+        if name in headers['content'][count]:
+            headers['content'][count][name].append(value)
+        else:
+            headers['content'][count][name] = [value]
 
     def write_function(buf):
         size = data_buf.getbuffer().nbytes
@@ -81,9 +102,26 @@ def setup_curl_for_get(c, p, data_buf, headers=None):
     c.setopt(pycurl.FORBID_REUSE, p.get('forbid_reuse', 1))
     c.setopt(pycurl.FRESH_CONNECT, p.get('fresh_connect', 1))
     c.setopt(c.AUTOREFERER, p.get('autoreferer', 1))
+
+    httpheader = p.get('httpheader')
+    if httpheader:
+        c.setopt(pycurl.HEADER, p.get('header', 1))
+        c.setopt(c.HTTPHEADER, httpheader)
+    referer = p.get('referer')
+    if referer:
+        c.setopt(c.REFERER, referer)
+    cookiejar = p.get('cookiejar')
+    if cookiejar:
+        print('cookiejar', cookiejar)
+        c.setopt(c.COOKIEJAR, cookiejar)
     cookiefile = p.get('cookiefile')
     if cookiefile:
+        print('cookiefile', cookiefile)
         c.setopt(c.COOKIEFILE, cookiefile)
+
+    dns_servers = p.get('dns_servers')
+    if dns_servers:
+        c.setopt(c.DNS_SERVERS, dns_servers)
 
     debug = p.get('debugfunction')
     if debug:
@@ -114,16 +152,15 @@ def setup_curl_for_get(c, p, data_buf, headers=None):
 async def request(payload):
     c = pycurl.Curl()
     data_buf = BytesIO()
-    header_buf = BytesIO()
-    headers = {}
+    # header_buf = BytesIO()
+    headers = {'count': 0, 'content': [{}]}
     try:
         setup_curl_for_get(c, payload, data_buf, headers)  # header_buf)
 
         with aiohttp.Timeout(payload.get('timeout', 10)):
-            await CurlLoop.handler_ready(c)
+            resp = await CurlLoop.handler_ready(c)
             storage = payload.get('storage')
             # if storage == 'seaweed':
-            # header = header_buf.getvalue().decode('utf-8', 'ignore')
             encoding = None
             if 'content-type' in headers:
                 content_type = headers['content-type'].lower()
@@ -131,67 +168,29 @@ async def request(payload):
                 if match:
                     encoding = match.group(1)
                     print('Decoding using %s' % encoding)
-            if encoding is None:
-                # Default encoding for HTML is iso-8859-1.
-                # Other content types may have different default encoding,
-                # or in case of binary data, may have no encoding at all.
-                # encoding = 'iso-8859-1'
-                encoding = 'utf8'
-                print('Assuming encoding is %s' % encoding)
-
             body = data_buf.getvalue()
-            data = body.decode(encoding, 'ignore')
-            # Decode using the encoding we figured out.
 
-
-
-            # data = data_buf.getvalue().decode('utf-8', 'ignore')
-
-            # if 'content-type' in headers:
-            #     content_type = headers['content-type'].lower()
-            #     match = re.search('charset=(\S+)', content_type)
-            #     if match:
-            #         encoding = match.group(1)
-            #         print('Decoding using %s' % encoding)
-
-            effective_url = c.getinfo(pycurl.EFFECTIVE_URL)
-            primary_port = c.getinfo(pycurl.PRIMARY_PORT)
-            local_ip = c.getinfo(pycurl.LOCAL_IP)
-            local_port = c.getinfo(pycurl.LOCAL_PORT)
-            speed_download = c.getinfo(pycurl.SPEED_DOWNLOAD)
-            size_download = c.getinfo(pycurl.SIZE_DOWNLOAD)
-            redirect_time = c.getinfo(pycurl.REDIRECT_TIME)
-            redirect_count = c.getinfo(pycurl.REDIRECT_COUNT)
-            http_code = c.getinfo(pycurl.HTTP_CODE)
-            response_code = c.getinfo(pycurl.RESPONSE_CODE)
-            total_time = c.getinfo(pycurl.TOTAL_TIME)
-            content_type = c.getinfo(pycurl.CONTENT_TYPE)
-            namelookup_time = c.getinfo(pycurl.NAMELOOKUP_TIME)
-            info_filetime = c.getinfo(pycurl.INFO_FILETIME)
-
-            return {
+            if encoding is None:
+                dammit = UnicodeDammit(body, ["utf-8", "gb2312", "gbk", "big5", "gb18030"], smart_quotes_to="html")
+                data = dammit.unicode_markup
+                encoding = dammit.original_encoding
+            else:
+                data = body.decode(encoding, 'ignore')
+            # headers.remove({})
+            headers['content'] = [h for h in headers['content'] if len(h)>0]
+            resp.update({
                 'data': data,
                 'headers': headers,
                 'encoding': encoding,
-                'effective_url': effective_url,
-                'primary_port': primary_port,
-                'local_ip': local_ip,
-                'local_port': local_port,
-                'speed_download': speed_download,
-                'size_download': size_download,
-                'redirect_time': redirect_time,
-                'redirect_count': redirect_count,
-                'http_code': http_code,
-                'response_code': response_code,
-                'total_time': total_time,
-                'content_type': content_type,
-                'namelookup_time': namelookup_time,
-                'info_filetime': info_filetime,
-            }
+            })
+            return resp
 
-        print('timeout', url)
-        return {
-            'timeout': url
-        }
+
+
+        # return 'haha'
+        # print('timeout', url)
+        # return {
+        #     'timeout': url
+        # }
     finally:
         c.close()

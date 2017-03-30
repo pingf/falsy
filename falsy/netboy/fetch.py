@@ -14,4 +14,5 @@ async def boy(urls):
     )
     end = time.time()
     print('time:', end - begin)
+    # return [t.result() for t in targets]
     return res

@@ -27,12 +27,4 @@ def run(coro):
     aio.set_event_loop(loop)
     loop.set_exception_handler(exception_handler)
     r, _ = loop.run_until_complete(main_task())
-    # print(r)
-    # print(r[0])
-    print(json.dumps(r[0], indent=2))
-    # print(r[0]['primary_port'])
-    # print(r[0]['local_ip'])
-    # print(r[0]['local_port'])
-    # print(r[0]['speed_download'])
-    print('>'*50)
-    # print(r[1]['header'])
+    return r

@@ -2,6 +2,8 @@ import asyncio as aio
 import atexit
 import pycurl
 
+from falsy.netboy.curl_result import curl_result
+
 
 class CurlLoop:
     class Error(Exception):
@@ -35,7 +37,9 @@ class CurlLoop:
             while True:
                 num_ready, success, fail = cls._multi.info_read()
                 for c in success:
-                    cls._futures.pop(c).set_result('')
+                    cc = cls._futures.pop(c)
+                    cc.set_result(curl_result(c))
+
                 for c, err_num, err_msg in fail:
                     print('error:', err_num, err_msg, c.getinfo(pycurl.EFFECTIVE_URL))
                     cls._futures.pop(c).set_exception(CurlLoop.Error('curl error:' + str(err_num) + ' ' + err_msg))
