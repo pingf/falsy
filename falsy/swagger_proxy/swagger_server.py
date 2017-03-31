@@ -191,7 +191,12 @@ class SwaggerServer:
                 resp.body = pre_body + json.dumps(data, indent=2) if 'json' in content_type else json.dumps(
                     pre_body) + str(data)
         else:
-            resp.body = json.dumps(data, indent=2) if 'json' in content_type else data
+            if 'json' in content_type or type(data) == dict:
+                resp.body = json.dumps(data, indent=2)
+            elif type(data) == str or type(data) == bytes:
+                resp.body = data
+            else:
+                resp.body = str(data)
         resp.content_type = content_type
         resp.status = http_code
 
