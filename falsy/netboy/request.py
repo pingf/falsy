@@ -179,18 +179,15 @@ async def request(payload):
             # headers.remove({})
             headers['content'] = [h for h in headers['content'] if len(h)>0]
             resp.update({
+                'url': payload.get('url'),
                 'data': data,
                 'headers': headers,
                 'encoding': encoding,
             })
+            post_func = payload.get('post_func')
+            if post_func:
+                post_func = load(post_func)
+                resp = post_func(payload, resp)
             return resp
-
-
-
-        # return 'haha'
-        # print('timeout', url)
-        # return {
-        #     'timeout': url
-        # }
     finally:
         c.close()

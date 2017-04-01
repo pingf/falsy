@@ -1,23 +1,5 @@
 import pycurl
 def curl_result(c):
-
-    # encoding = None
-    # if 'content-type' in headers:
-    #     content_type = headers['content-type'].lower()
-    #     match = re.search('charset=(\S+)', content_type)
-    #     if match:
-    #         encoding = match.group(1)
-    #         print('Decoding using %s' % encoding)
-    # body = data_buf.getvalue()
-    #
-    # if encoding is None:
-    #     dammit = UnicodeDammit(body, ["utf-8", "gb2312", "gbk", "big5", "gb18030"], smart_quotes_to="html")
-    #     data = dammit.unicode_markup
-    #     encoding = dammit.original_encoding
-    # else:
-    #     data = body.decode(encoding, 'ignore')
-
-
     effective_url = c.getinfo(pycurl.EFFECTIVE_URL)
     primary_ip = c.getinfo(pycurl.PRIMARY_IP)
     primary_port = c.getinfo(pycurl.PRIMARY_PORT)

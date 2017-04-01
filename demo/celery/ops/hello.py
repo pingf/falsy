@@ -3,20 +3,37 @@ from falsy.loader import func, task
 
 log = JLog().bind()
 
+
 def post_it(name):
     log.debug('post it')
     payload = {
         'type': 'normal',
         'tasks': [
-            {"args": "haha", "ids": ["demo.celery.task.tasks.test2"], "on_error": "demo.celery.task.tasks.on_chord_error"},
-            {"args": "haha", "ids": ["demo.celery.task.tasks.test"], "on_error": "demo.celery.task.tasks.on_chord_error"},
+            {
+                "args": [
+                    {
+                        'url': 'http://www.baidu.com',
+                        'dns_servers': '114.114.114.114'
+                    },
+                    {
+                        'url': 'http://www.douban.com',
+                        'dns_servers': '114.114.114.114'
+                    },
+                ],
+                "ids": ["demo.celery.task.tasks.crawl"],
+            },
+            {
+                "args": [
+                    {
+                        'url': 'http://www.google.com',
+                    },
+                ],
+                "ids": ["demo.celery.task.tasks.crawl"],
+            },
         ],
-        'callback': "demo.celery.task.tasks.cht"
+        'callback': "demo.celery.task.tasks.callback"
     }
     res = task.loads(payload).delay()
     return {
         'post': name
     }
-
-
-

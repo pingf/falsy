@@ -1,3 +1,4 @@
+import json
 from time import sleep
 
 from celery import current_task
@@ -5,42 +6,43 @@ from celery.task import Task
 
 from demo.celery.task.main import app
 # from demo.celery.task.util.context_decorator import log_runtime
-from falsy.utils.decorator import suppress_exceptions, log_runtime
+from falsy.netboy.curl_loop import CurlLoop
+from falsy.netboy.fetch import boy
+from falsy.netboy.run import run
+from falsy.utils.decorator import redirect_exceptions, log_runtime
 
-
-@app.task(bind=True)  # , soft_time_limit=5)
-def test(self, s):
-    print(111111111)
-    print(self.request.id)
-    # sleep(20)
-    # raise Exception('test')
-    # add.delay('haha')
-    return s + '.'
+class ExampleException(Exception):
+    pass
 
 
 def catch(et, ev, es):
-    print(et, ev)
+    print(et, ev, 'catched')
     return True
 
 
 @app.task(bind=True, max_retries=3)
 @log_runtime(label='hahaha')
-@suppress_exceptions(on_error='demo.celery.task.tasks.catch')
-def test2(self, s):
-    print(self.request.id)
-    raise Exception('test')
-    # try:
-    #     raise Exception('test')
-    # except Exception as e:
-    #     self.retry(countdown=3)
-    # add.delay('haha')
-    return s + '.'
+@redirect_exceptions(to='demo.celery.task.tasks.catch',exceptions=(Exception))
+def crawl(self, urls):
+    ress=run(boy(urls))
+    print(type(ress))
+    print(ress)
+    for res in ress:
+        if type(res) == CurlLoop.Error:
+            print('curl error')
+            continue
+        if res is None:
+            print('res is None')
+            continue
+        res['data'] = res['data'][:80]
+        print(json.dumps(res, indent=2))
+    return '>>>'
+
 
 
 @app.task(bind=True)
-def cht(self, s):
+def callback(self, s):
     print(s)
-    print('?????????????????????' * 4)
     return None
 
 
@@ -48,7 +50,7 @@ def cht(self, s):
 def on_chord_error(request, exc, traceback):
     print('!' * 400)
     # print('Task {0!r} raised error: {1!r}'.format(request.id, exc))
-    return None
+    return True
 
 
 @app.task(name='super_task.error_callback')

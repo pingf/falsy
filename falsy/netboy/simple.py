@@ -14,7 +14,7 @@ if __name__ == "__main__":
         #     'cookiefile': 'aa.lwp',
         # },
         {
-            'url': 'http://www.baidu.com',
+            'url': 'http://www.douban.com',
             'dns_servers': '114.114.114.114'
         },
         # {
