@@ -1,10 +1,16 @@
 import functools
 import importlib
 
+func_map = {}
+
 
 def load(function_name):
     if not function_name:
         return None
+
+    if function_name in func_map.keys():
+        return func_map[function_name]
+
     module_name, attr_path = function_name.rsplit('.', 1)
     module = None
     last_import_error = None
@@ -27,6 +33,7 @@ def load(function_name):
             raise last_import_error
         else:
             raise
+    func_map[str(function_name)] = function
     return function
 
 

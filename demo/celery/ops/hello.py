@@ -13,7 +13,8 @@ def post_it(name):
                 "args": [
                     {
                         'url': 'http://www.baidu.com',
-                        'dns_servers': '114.114.114.114'
+                        'dns_servers': '114.114.114.114',
+                        'post_func': 'demo.celery.task.tasks.post_func'
                     },
                     {
                         'url': 'http://www.douban.com',

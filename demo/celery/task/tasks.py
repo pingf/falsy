@@ -60,3 +60,8 @@ def error_callback(*args, **kwargs):
     # print(kwargs)
     return None
     # return 'error'
+
+def post_func(payload, resp):
+    print('post func called')
+    print(resp)
+    return resp
