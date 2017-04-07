@@ -123,7 +123,7 @@ class OperatorLoader:
             'long': lambda p: req.get_param_as_int(p),
             'float': lambda p: float(req.get_param(p)),
             'double': lambda p: float(req.get_param(p)),
-            'array': lambda p: req.get_param_as_list(p),
+            'array': lambda p: req.get_param_as_dict(p),
             'object': lambda p: req.get_param_as_dict(p),
             'boolean': lambda p: req.get_param_as_bool(p),
         }
