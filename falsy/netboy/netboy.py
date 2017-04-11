@@ -22,14 +22,16 @@ class NetBoy:
             # type: (str, Any) -> None
             self[name] = value
 
-    def __init__(self, payload):
+    def __init__(self, payload=None):
         self.payload = payload
 
     def run(self, payload=None):
-        if payload:
-            ress = run(net_boy(self.payload + payload))
-        else:
+        if self.payload is None:
+            ress = run(net_boy(payload))
+        elif payload is None:
             ress = run(net_boy(self.payload))
+        else:
+            ress = run(net_boy(self.payload + payload))
         obj_ress = []
         for v in ress:
             obj_ress.append(NetBoy.Dict(v))

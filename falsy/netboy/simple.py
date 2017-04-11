@@ -18,13 +18,16 @@ if __name__ == "__main__":
         },
     ]
     boy=NetBoy(payload)
-    ress = boy.run(payload)
+    ress = boy.run()
     # ress = run(net_boy(payload))
     for res in ress:
         if res is None:
             print('res is None')
             continue
-        print(res.data)
+        # print(res.data)
+        print('>>>>>>')
+        # print(res)
+        print(res.effective_url)
         # print(json.dumps(res, indent=2))
 # print(json.dumps(res, indent=2))
 # if __name__ == "__main__":
