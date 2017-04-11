@@ -16,6 +16,10 @@ if __name__ == "__main__":
             'url': 'http://www.douban.com',
             'dns_servers': '114.114.114.114'
         },
+        {
+            'url': 'http://www.google.com',
+            'dns_servers': '114.114.114.114'
+        },
     ]
     boy=NetBoy(payload)
     ress = boy.run()

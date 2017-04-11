@@ -14,7 +14,8 @@ class NetBoy:
             try:
                 return self[name]
             except KeyError:
-                raise NetBoy.Exception('netboy key error: ' + name)
+                # raise NetBoy.Exception('netboy key error: ' + name)
+                return '!netboy key [' + name + '] does not exist'
             except Exception:
                 raise NetBoy.Exception('netboy exception: ' + name)
 
@@ -34,5 +35,8 @@ class NetBoy:
             ress = run(net_boy(self.payload + payload))
         obj_ress = []
         for v in ress:
-            obj_ress.append(NetBoy.Dict(v))
+            if type(v) is not dict:
+                obj_ress.append(NetBoy.Dict({'error': str(v)}))
+            else:
+                obj_ress.append(NetBoy.Dict(v))
         return obj_ress
