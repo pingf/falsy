@@ -1,6 +1,7 @@
 import json
 
-from falsy.netboy.fetch import get_boy, post_boy
+from falsy.netboy.fetch import get_boy, post_boy, net_boy
+from falsy.netboy.netboy import NetBoy
 from falsy.netboy.run import run
 
 if __name__ == "__main__":
@@ -10,14 +11,21 @@ if __name__ == "__main__":
             "postfields": {
                 "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTE4ODg2ODQsImNvZGVfaWQiOiJjYWYwZTZlOC0wYTEzLTExZTctOTVhNy0xYzg3MmM3MTBhNDgifQ.SkwAtOX8JW4ZRb2S4cftg7PGveU21DZKzlrBYRK6S9I"
             }
-        }
+        },
+        {
+            'url': 'http://www.douban.com',
+            'dns_servers': '114.114.114.114'
+        },
     ]
-    ress = run(post_boy(payload))
+    boy=NetBoy(payload)
+    ress = boy.run(payload)
+    # ress = run(net_boy(payload))
     for res in ress:
         if res is None:
             print('res is None')
             continue
-        print(json.dumps(res, indent=2))
+        print(res.data)
+        # print(json.dumps(res, indent=2))
 # print(json.dumps(res, indent=2))
 # if __name__ == "__main__":
 #     urls = [
