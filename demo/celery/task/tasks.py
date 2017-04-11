@@ -7,7 +7,7 @@ from celery.task import Task
 from demo.celery.task.main import app
 # from demo.celery.task.util.context_decorator import log_runtime
 from falsy.netboy.curl_loop import CurlLoop
-from falsy.netboy.fetch import boy
+from falsy.netboy.fetch import get_boy
 from falsy.netboy.run import run
 from falsy.utils.decorator import redirect_exceptions, log_runtime
 
@@ -24,7 +24,7 @@ def catch(et, ev, es):
 @log_runtime(label='hahaha')
 @redirect_exceptions(to='demo.celery.task.tasks.catch',exceptions=(Exception))
 def crawl(self, urls):
-    ress=run(boy(urls))
+    ress=run(get_boy(urls))
     print(type(ress))
     print(ress)
     for res in ress:

@@ -21,8 +21,8 @@ class CurlLoop:
             try:
                 curl_ret = await cls._futures[c]
             except Exception as e:
-                raise e
                 print('exception', e)
+                raise e
             return curl_ret
         finally:
             cls._multi.remove_handle(c)
