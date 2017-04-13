@@ -28,25 +28,27 @@ class NetBoy:
         self.payload = payload
 
     def run(self, payload=None):
+        real_payload = payload
         if self.payload is None:
-            ress = run(net_boy(payload))
+            real_payload = payload
         elif payload is None:
-            ress = run(net_boy(self.payload))
+            real_payload = self.payload
         else:
-            ress = run(net_boy(self.payload + payload))
+            real_payload = self.payload+payload
+        ress = run(net_boy(real_payload))
         obj_ress = []
         for v in ress:
             if type(v) == CurlLoop.CurlException:
-                code = v.code
-                desc = v.desc
-                data = v.data
-                boy = NetBoy.Dict(data)
-                boy['error_code'] = code
-                boy['error_desc'] = desc
+                boy = NetBoy.Dict(v.data)
+                boy['error_code'] = v.code
+                boy['error_desc'] = v.desc
                 boy['state'] = 'error'
                 obj_ress.append(boy)
-            else:
+            elif type(v) == dict:
                 boy = NetBoy.Dict(v)
                 boy['state'] = 'normal'
                 obj_ress.append(boy)
+            else:
+                print('!!!error!!!')
+                obj_ress.append(str(v))
         return obj_ress

@@ -41,14 +41,18 @@ class CurlLoop:
                 num_ready, success, fail = cls._multi.info_read()
                 for c in success:
                     cc = cls._futures.pop(c)
-                    cc.set_result(curl_result(c))
-
+                    result = curl_result(c)
+                    cc.set_result(result)
+                    result['id'] = c._raw_id
                 for c, err_num, err_msg in fail:
                     print('error:', err_num, err_msg, c.getinfo(pycurl.EFFECTIVE_URL))
                     result = curl_result(c)
+                    result['url'] = c._raw_url
+                    result['id'] = c._raw_id
                     cls._futures.pop(c).set_exception(CurlLoop.CurlException(code=err_num, desc=err_msg, data=result))
                 if num_ready == 0:
                     break
+
 
 async def curl_loop():
     while True:
