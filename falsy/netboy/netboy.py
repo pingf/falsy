@@ -16,7 +16,7 @@ class NetBoy:
                 return self[name]
             except KeyError:
                 # raise NetBoy.Exception('netboy key error: ' + name)
-                return None#'!netboy key [' + name + '] does not exist'
+                return None  # '!netboy key [' + name + '] does not exist'
             except Exception:
                 raise NetBoy.Exception('netboy exception: ' + name)
 
@@ -34,7 +34,7 @@ class NetBoy:
         elif payload is None:
             real_payload = self.payload
         else:
-            real_payload = self.payload+payload
+            real_payload = self.payload + payload
         ress = run(net_boy(real_payload))
         obj_ress = []
         for v in ress:
@@ -49,9 +49,10 @@ class NetBoy:
                 boy['state'] = 'normal'
                 obj_ress.append(boy)
             else:
-                boy = NetBoy.Dict(v)
-                boy['state'] = 'critical'
-                boy['error_code'] = -1
-                boy['error_desc'] = "{} - {}".format(type(v), str(v))
+                boy = NetBoy.Dict({
+                    'state': 'critical',
+                    'error_code': -1,
+                    'error_desc': "{} - {}".format(type(v), str(v))
+                })
                 obj_ress.append(boy)
         return obj_ress
