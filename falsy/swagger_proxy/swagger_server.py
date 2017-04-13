@@ -145,17 +145,18 @@ class SwaggerServer:
                             base_after(req=req, resp=resp, **params)
 
                     except Exception as e:
-                        if base_excp is None and excp is None:
-                            raise e
+                        throw_out = True
                         if base_excp is not None:
-                            base_excp(req=req, resp=resp, error=e)
+                            throw_out = base_excp(req=req, resp=resp, error=e)
                         if excp is not None:
-                            excp(req=req, resp=resp, error=e)
-                        raise e
-                    if final:
-                        final(req=req, resp=resp, response=handler_return, **params)
-                    if base_final:
-                        base_final(req=req, resp=resp, **params)
+                            throw_out = excp(req=req, resp=resp, error=e)
+                        if throw_out:
+                            raise e
+                    finally:
+                        if final:
+                            final(req=req, resp=resp, response=handler_return, **params)
+                        if base_final:
+                            base_final(req=req, resp=resp, **params)
                     return
             except Exception as e:
                 self.log.error_trace("process error: {}".format(e))
