@@ -49,6 +49,9 @@ class NetBoy:
                 boy['state'] = 'normal'
                 obj_ress.append(boy)
             else:
-                print('!!!error!!!')
-                obj_ress.append(str(v))
+                boy = NetBoy.Dict(v)
+                boy['state'] = 'critical'
+                boy['error_code'] = -1
+                boy['error_desc'] = "{} - {}".format(type(v), str(v))
+                obj_ress.append(boy)
         return obj_ress
