@@ -300,7 +300,7 @@ async def get_request(payload):
     try:
         setup_curl_for_get(c, payload, data_buf, headers)  # header_buf)
 
-        with aiohttp.Timeout(payload.get('timeout', 10)):
+        with aiohttp.Timeout(payload.get('aiotimeout', 20)):
             resp = await CurlLoop.handler_ready(c)
             encoding = None
             if 'content-type' in headers:

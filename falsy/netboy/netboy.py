@@ -1,5 +1,6 @@
 import typing
 
+from falsy.netboy.curl_loop import CurlLoop
 from falsy.netboy.fetch import net_boy
 from falsy.netboy.run import run
 
@@ -15,7 +16,7 @@ class NetBoy:
                 return self[name]
             except KeyError:
                 # raise NetBoy.Exception('netboy key error: ' + name)
-                return '!netboy key [' + name + '] does not exist'
+                return None#'!netboy key [' + name + '] does not exist'
             except Exception:
                 raise NetBoy.Exception('netboy exception: ' + name)
 
@@ -35,8 +36,17 @@ class NetBoy:
             ress = run(net_boy(self.payload + payload))
         obj_ress = []
         for v in ress:
-            if type(v) is not dict:
-                obj_ress.append(NetBoy.Dict({'error': str(v)}))
+            if type(v) == CurlLoop.CurlException:
+                code = v.code
+                desc = v.desc
+                data = v.data
+                boy = NetBoy.Dict(data)
+                boy['error_code'] = code
+                boy['error_desc'] = desc
+                boy['state'] = 'error'
+                obj_ress.append(boy)
             else:
-                obj_ress.append(NetBoy.Dict(v))
+                boy = NetBoy.Dict(v)
+                boy['state'] = 'normal'
+                obj_ress.append(boy)
         return obj_ress

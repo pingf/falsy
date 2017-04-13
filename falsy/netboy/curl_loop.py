@@ -6,8 +6,11 @@ from falsy.netboy.curl_result import curl_result
 
 
 class CurlLoop:
-    class Error(Exception):
-        pass
+    class CurlException(Exception):
+        def __init__(self, code, desc, data):
+            self.code = code
+            self.desc = desc
+            self.data = data
 
     _multi = pycurl.CurlMulti()
     atexit.register(_multi.close)
@@ -42,7 +45,8 @@ class CurlLoop:
 
                 for c, err_num, err_msg in fail:
                     print('error:', err_num, err_msg, c.getinfo(pycurl.EFFECTIVE_URL))
-                    cls._futures.pop(c).set_exception(CurlLoop.Error('curl error:' + str(err_num) + ' ' + err_msg))
+                    result = curl_result(c)
+                    cls._futures.pop(c).set_exception(CurlLoop.CurlException(code=err_num, desc=err_msg, data=result))
                 if num_ready == 0:
                     break
 

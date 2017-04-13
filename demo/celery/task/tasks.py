@@ -28,7 +28,7 @@ def crawl(self, urls):
     print(type(ress))
     print(ress)
     for res in ress:
-        if type(res) == CurlLoop.Error:
+        if type(res) == CurlLoop.Exception:
             print('curl error')
             continue
         if res is None:
