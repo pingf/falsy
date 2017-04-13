@@ -151,6 +151,7 @@ class SwaggerServer:
                             base_excp(req=req, resp=resp, error=e)
                         if excp is not None:
                             excp(req=req, resp=resp, error=e)
+                        raise e
                     if final:
                         final(req=req, resp=resp, response=handler_return, **params)
                     if base_final:
