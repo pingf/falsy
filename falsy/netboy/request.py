@@ -193,13 +193,16 @@ async def get_request(payload):
                     encoding = match.group(1)
                     print('Decoding using %s' % encoding)
             body = data_buf.getvalue()
-
-            if encoding is None:
-                dammit = UnicodeDammit(body, ["utf-8", "gb2312", "gbk", "big5", "gb18030"], smart_quotes_to="html")
-                data = dammit.unicode_markup
-                encoding = dammit.original_encoding
+            if len(body) == 0:
+                data = ''
+                encoding = 'utf-8'
             else:
-                data = body.decode(encoding, 'ignore')
+                if encoding is None:
+                    dammit = UnicodeDammit(body, ["utf-8", "gb2312", "gbk", "big5", "gb18030"], smart_quotes_to="html")
+                    data = dammit.unicode_markup
+                    encoding = dammit.original_encoding
+                else:
+                    data = body.decode(encoding, 'ignore')
             # headers.remove({})
             headers['content'] = [h for h in headers['content'] if len(h) > 0]
             resp.update({
@@ -235,8 +238,8 @@ async def post_request(payload):
             #         encoding = match.group(1)
             #         print('Decoding using %s' % encoding)
             body = data_buf.getvalue()
-            encoding = 'utf8'
-            data = body.decode(encoding, 'ignore')
+            encoding = 'utf-8'
+            data = body.decode(encoding, 'ignore') if len(body)>0 else ''
 
             # if encoding is None:
             #     dammit = UnicodeDammit(body, ["utf-8", "gb2312", "gbk", "big5", "gb18030"], smart_quotes_to="html")

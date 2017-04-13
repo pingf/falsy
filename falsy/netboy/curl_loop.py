@@ -42,8 +42,8 @@ class CurlLoop:
                 for c in success:
                     cc = cls._futures.pop(c)
                     result = curl_result(c)
-                    cc.set_result(result)
                     result['id'] = c._raw_id
+                    cc.set_result(result)
                 for c, err_num, err_msg in fail:
                     print('error:', err_num, err_msg, c.getinfo(pycurl.EFFECTIVE_URL))
                     result = curl_result(c)
