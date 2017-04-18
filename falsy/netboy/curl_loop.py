@@ -43,12 +43,16 @@ class CurlLoop:
                     cc = cls._futures.pop(c)
                     result = curl_result(c)
                     result['id'] = c._raw_id
+                    result['state'] = 'normal'
                     cc.set_result(result)
                 for c, err_num, err_msg in fail:
                     print('error:', err_num, err_msg, c.getinfo(pycurl.EFFECTIVE_URL))
                     result = curl_result(c)
                     result['url'] = c._raw_url
                     result['id'] = c._raw_id
+                    result['state'] = 'error'
+                    result['error_code'] = err_num
+                    result['error_desc'] = err_msg
                     cls._futures.pop(c).set_exception(CurlLoop.CurlException(code=err_num, desc=err_msg, data=result))
                 if num_ready == 0:
                     break

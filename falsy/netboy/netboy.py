@@ -40,13 +40,9 @@ class NetBoy:
         for v in ress:
             if type(v) == CurlLoop.CurlException:
                 boy = NetBoy.Dict(v.data)
-                boy['error_code'] = v.code
-                boy['error_desc'] = v.desc
-                boy['state'] = 'error'
                 obj_ress.append(boy)
             elif type(v) == dict:
                 boy = NetBoy.Dict(v)
-                boy['state'] = 'normal'
                 obj_ress.append(boy)
             else:
                 boy = NetBoy.Dict({

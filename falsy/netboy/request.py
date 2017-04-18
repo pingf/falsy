@@ -67,7 +67,7 @@ def setup_curl_basic(c, p, data_buf, headers=None):
 
     url = p.get('url')
     c._raw_url = url
-    c._raw_id = p.get('id', uuid.uuid1())
+    c._raw_id = p.get('id', str(uuid.uuid1()))
     c.setopt(pycurl.URL, url.encode('utf-8'))
     c.setopt(pycurl.FOLLOWLOCATION, p.get('followlocation', 1))
     c.setopt(pycurl.MAXREDIRS, p.get('maxredirs', 5))
@@ -183,7 +183,7 @@ async def get_request(payload):
     try:
         setup_curl_for_get(c, payload, data_buf, headers)  # header_buf)
 
-        with aiohttp.Timeout(payload.get('aiohttp_timeout', 20)):
+        with aiohttp.Timeout(payload.get('aiohttp_timeout', 60)):
             resp = await CurlLoop.handler_ready(c)
             encoding = None
             if 'content-type' in headers:
@@ -228,7 +228,7 @@ async def post_request(payload):
     try:
         setup_curl_for_post(c, payload, data_buf, headers)  # header_buf)
 
-        with aiohttp.Timeout(payload.get('aiohttp_timeout', 20)):
+        with aiohttp.Timeout(payload.get('aiohttp_timeout', 60)):
             resp = await CurlLoop.handler_ready(c)
             # encoding = None
             # if 'content-type' in headers:
