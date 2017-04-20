@@ -16,7 +16,6 @@ var dapi = (function ($, api_url) {
             type: "get",
             async: false,
             success: function (data) {
-                console.log("chengg");
                 //var menu=JSON.parse(data)
                 var menu = data;
                 console.log(menu);
@@ -299,16 +298,22 @@ var dapi = (function ($, api_url) {
             var basePath = null;
             if (apiInfo.basePath.startsWith('/')) {
                 basePath = apiInfo.basePath;
-            }else{
-                basePath = '/'+apiInfo.basePath;
+            } else {
+                basePath = '/' + apiInfo.basePath;
             }
             if (apiInfo.basePath.endsWith('/')) {
-                basePath = basePath.slice(0,-1);
+                basePath = basePath.slice(0, -1);
+            }
+            var data = null;
+            if (apiInfo.methodType == 'post') {
+                data = JSON.stringify(params);
+            }else{
+                data = params;
             }
             $.ajax({
-                url: DApiUI.getStringValue(basePath+apiInfo.url),
+                url: DApiUI.getStringValue(basePath + apiInfo.url),
                 type: DApiUI.getStringValue(apiInfo.methodType),
-                data: params,
+                data: data,
                 success: function (data, status, xhr) {
                     var resptab = $('<div id="resptab" class="tabs-container" ></div>')
                     var ulresp = $('<ul class="nav nav-tabs">' +

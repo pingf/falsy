@@ -35,9 +35,13 @@ paths:
       summary: 测试post请求
       parameters:
         - name: name
-          in: query
-          type: string
-          default: 'john'
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                default: 'john'
       responses:
         200:
           description: Return response
