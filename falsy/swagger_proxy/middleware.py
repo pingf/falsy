@@ -85,6 +85,8 @@ class SwaggerUIStaticMiddleware(object):
             self.static_dir = 'vendors/dist_impress'
         elif theme == 'normal' or theme == 'swagger':
             self.static_dir = 'vendors/dist_normal'
+        elif theme == 'bootstrap':
+            self.static_dir = 'vendors/dist_bootstrap'
         else:
             self.static_dir = 'vendors/dist_impress'
         self.url_prefix = url_prefix.lstrip('/')

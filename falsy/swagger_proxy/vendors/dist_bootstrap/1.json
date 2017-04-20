@@ -1,0 +1,81 @@
+{
+  "basePath": "/v1",
+  "consumes": [
+    "application/json"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "FALSY SIMPLE DEMO API",
+    "version": "0.1",
+    "contact": {
+      "name": "xiaoym@drore.com"
+    },
+    "license": {}
+  },
+  "host": "172.30.0.77:8001",
+  "tags": [
+    {
+      "name": "GET",
+      "description": "地址管理"
+    },
+    {
+      "name": "POST",
+      "description": "地址管理"
+    }
+  ],
+  "basePath": "v1/",
+  "paths": {
+    "/hello": {
+      "get": {
+        "parameters": [
+          {
+            "default": "john",
+            "in": "query",
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return response"
+          }
+        },
+        "summary": "\u6d4b\u8bd5get\u8bf7\u6c42",
+        "tags": [
+          "GET"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "default": "john",
+            "in": "query",
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return response"
+          }
+        },
+        "summary": "\u6d4b\u8bd5post\u8bf7\u6c42",
+        "tags": [
+          "POST"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ]
+      }
+    }
+  }
+}

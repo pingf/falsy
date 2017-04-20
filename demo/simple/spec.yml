@@ -2,12 +2,14 @@ swagger: '2.0'
 info:
   title: FALSY SIMPLE DEMO API
   version: "0.1"
-consumes:
-  - application/json
-produces:
-  - text/html
-  - application/json
+  contact:
+    name: 'jesse'
 basePath: "/v1"
+tags:
+  - name: GET
+    description: GET
+  - name: POST
+    description: POST
 paths:
   '/hello':
     get:
@@ -22,6 +24,11 @@ paths:
       responses:
         200:
           description: Return response
+      consumes:
+        - application/json
+      produces:
+        - text/html
+        - application/json
     post:
       tags: [POST]
       operationId: demo.simple.ops.hello.post_it
@@ -34,6 +41,11 @@ paths:
       responses:
         200:
           description: Return response
+      consumes:
+        - application/json
+      produces:
+        - text/html
+        - application/json
     delete:
       tags: [DELETE]
       operationId: demo.simple.ops.hello.delete_it
@@ -46,6 +58,11 @@ paths:
       responses:
         200:
           description: Return response
+      consumes:
+        - application/json
+      produces:
+        - text/html
+        - application/json
     put:
       tags: [PUT]
       operationId: demo.simple.ops.hello.put_it
@@ -58,6 +75,11 @@ paths:
       responses:
         200:
           description: Return response
+      consumes:
+        - application/json
+      produces:
+        - text/html
+        - application/json
     patch:
       tags: [PATCH]
       operationId: demo.simple.ops.hello.patch_it
@@ -70,3 +92,8 @@ paths:
       responses:
         200:
           description: Return response
+      consumes:
+        - application/json
+      produces:
+        - text/html
+        - application/json
