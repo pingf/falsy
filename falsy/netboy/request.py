@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 
 import aiohttp
 import pycurl
-from bs4 import UnicodeDammit
+from bs4 import UnicodeDammit, BeautifulSoup
 import re
 import json
 
@@ -205,8 +205,12 @@ async def get_request(payload):
                     data = body.decode(encoding, 'ignore')
             # headers.remove({})
             headers['content'] = [h for h in headers['content'] if len(h) > 0]
+            soup = BeautifulSoup(data, 'lxml')
             resp.update({
                 'url': payload.get('url'),
+                # 'soup': soup,
+                'title': str(soup.title.get_text()),
+                'links': [str(link) for link in soup.find_all('a', href=True)],
                 'data': data,
                 'headers': headers,
                 'encoding': encoding,
@@ -249,6 +253,7 @@ async def post_request(payload):
             #     data = body.decode(encoding, 'ignore')
             # headers.remove({})
             headers['content'] = [h for h in headers['content'] if len(h) > 0]
+
             resp.update({
                 'url': payload.get('url'),
                 'data': data,

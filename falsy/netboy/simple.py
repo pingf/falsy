@@ -6,23 +6,27 @@ from falsy.netboy.run import run
 
 if __name__ == "__main__":
     payload = [
-        {
-            "url": "http://172.30.0.77:8003/v1/validate",
-            "postfields": {
-                "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTE4ODg2ODQsImNvZGVfaWQiOiJjYWYwZTZlOC0wYTEzLTExZTctOTVhNy0xYzg3MmM3MTBhNDgifQ.SkwAtOX8JW4ZRb2S4cftg7PGveU21DZKzlrBYRK6S9I"
-            },
-
-            'id':2
-        },
         # {
-        #     'url': 'http://www.douban.com',
-        #     'dns_servers': '114.114.114.114'
+        #     "url": "http://172.30.0.77:8003/v1/validate",
+        #     "postfields": {
+        #         "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTE4ODg2ODQsImNvZGVfaWQiOiJjYWYwZTZlOC0wYTEzLTExZTctOTVhNy0xYzg3MmM3MTBhNDgifQ.SkwAtOX8JW4ZRb2S4cftg7PGveU21DZKzlrBYRK6S9I"
+        #     },
+        #
+        #     'id':2
         # },
         {
-            'url': 'http://www.google.com',
-            'dns_servers': '114.114.114.114',
-            'id':1
+            'url': 'http://www.douban.com',
+            'dns_servers': '114.114.114.114'
         },
+        {
+            'url': 'http://www.baidu.com',
+            'dns_servers': '114.114.114.114'
+        },
+        # {
+        #     'url': 'http://www.google.com',
+        #     'dns_servers': '114.114.114.114',
+        #     'id':1
+        # },
     ]
     boy=NetBoy(payload)
     ress = boy.run()
@@ -37,8 +41,13 @@ if __name__ == "__main__":
         print(res.effective_url)
         print('>>>>2')
         print(res.url)
-        print(res.data)
+        # print(res.data)
         print(res.id)
+        print('--------links----------')
+        for link in res.links:
+            print(link['href'])
+        print(res.title)
+        print(res.http_code)
         # print(json.dumps(res, indent=2))
 # print(json.dumps(res, indent=2))
 # if __name__ == "__main__":

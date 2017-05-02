@@ -49,19 +49,19 @@ FAL.S.Y
     - application/json
     basePath: "/v1"
     paths:
-    '/hello':
-      get:
-        tags: [Method]
-        operationId: demo.get_it
-        summary: testing
-        parameters:
-          - name: name
-            in: query
-            type: string
-            default: 'john'
-        responses:
-          200:
-            description: Return response
+      '/hello':
+        get:
+          tags: [Method]
+          operationId: demo.get_it
+          summary: testing
+          parameters:
+            - name: name
+              in: query
+              type: string
+              default: 'john'
+          responses:
+            200:
+              description: Return response
     ```
   
 3. writting the operation handler(demo.py)
