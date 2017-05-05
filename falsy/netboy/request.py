@@ -209,8 +209,8 @@ async def get_request(payload):
             resp.update({
                 'url': payload.get('url'),
                 # 'soup': soup,
-                'title': str(soup.title.get_text()),
-                'links': [str(link) for link in soup.find_all('a', href=True)],
+                'title': get_title(data),
+                'links': get_links(data),
                 'data': data,
                 'headers': headers,
                 'encoding': encoding,
@@ -223,6 +223,17 @@ async def get_request(payload):
     finally:
         c.close()
 
+
+def get_title(data):
+    soup = BeautifulSoup(data, 'lxml')
+    if soup.title is None:
+        return None
+    return str(soup.title.get_text())
+
+
+def get_links(data):
+    soup = BeautifulSoup(data, 'lxml')
+    return [str(link) for link in soup.find_all('a', href=True)]
 
 async def post_request(payload):
     c = pycurl.Curl()
