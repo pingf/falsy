@@ -45,7 +45,8 @@ if __name__ == "__main__":
         print(res.id)
         print('--------links----------')
         for link in res.links:
-            print(link['href'])
+            print(link)
+            # print(link['href'])
         print(res.title)
         print(res.http_code)
         # print(json.dumps(res, indent=2))

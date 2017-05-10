@@ -185,24 +185,24 @@ async def get_request(payload):
 
         with aiohttp.Timeout(payload.get('aiohttp_timeout', 60)):
             resp = await CurlLoop.handler_ready(c)
-            encoding = None
+            charset = None
             if 'content-type' in headers:
                 content_type = headers['content-type'].lower()
                 match = re.search('charset=(\S+)', content_type)
                 if match:
-                    encoding = match.group(1)
-                    print('Decoding using %s' % encoding)
+                    charset = match.group(1)
+                    print('Decoding using %s' % charset)
             body = data_buf.getvalue()
             if len(body) == 0:
                 data = ''
-                encoding = 'utf-8'
+                charset = 'utf-8'
             else:
-                if encoding is None:
+                if charset is None:
                     dammit = UnicodeDammit(body, ["utf-8", "gb2312", "gbk", "big5", "gb18030"], smart_quotes_to="html")
                     data = dammit.unicode_markup
-                    encoding = dammit.original_encoding
+                    charset = dammit.original_encoding
                 else:
-                    data = body.decode(encoding, 'ignore')
+                    data = body.decode(charset, 'ignore')
             # headers.remove({})
             headers['content'] = [h for h in headers['content'] if len(h) > 0]
             soup = BeautifulSoup(data, 'lxml')
@@ -213,7 +213,8 @@ async def get_request(payload):
                 'links': get_links(data),
                 'data': data,
                 'headers': headers,
-                'encoding': encoding,
+                'charset': charset,
+                'spider': 'pycurl'
             })
             post_func = payload.get('post_func')
             if post_func:
