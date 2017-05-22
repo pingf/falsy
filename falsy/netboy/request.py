@@ -68,6 +68,8 @@ def setup_curl_basic(c, p, data_buf, headers=None):
     url = p.get('url')
     c._raw_url = url
     c._raw_id = p.get('id', str(uuid.uuid1()))
+    c._raw_post_func = p.get('post_func')
+    c._raw_payload = p
     c.setopt(pycurl.URL, url.encode('utf-8'))
     c.setopt(pycurl.FOLLOWLOCATION, p.get('followlocation', 1))
     c.setopt(pycurl.MAXREDIRS, p.get('maxredirs', 5))
@@ -211,10 +213,15 @@ async def get_request(payload):
                 # 'soup': soup,
                 'title': get_title(data),
                 'links': get_links(data),
+                'metas': get_metas(data),
+                'images': get_images(data),
+                'scripts': get_scripts(data),
+                'text': get_text(data),
                 'data': data,
                 'headers': headers,
                 'charset': charset,
-                'spider': 'pycurl'
+                'spider': 'pycurl',
+                'payload': payload,
             })
             post_func = payload.get('post_func')
             if post_func:
@@ -232,9 +239,38 @@ def get_title(data):
     return str(soup.title.get_text())
 
 
+def get_text(data):
+    soup = BeautifulSoup(data, 'html.parser')
+
+    texts = soup.findAll(text=True)
+
+    def visible(element):
+        if element.parent.name in ['style', 'script', '[document]', 'head', 'title']:
+            return False
+        elif re.match('<!--.*-->', str(element)):
+            return False
+        return True
+
+    visible_texts = filter(visible, texts)
+    return ' '.join(visible_texts)
+
 def get_links(data):
     soup = BeautifulSoup(data, 'lxml')
-    return [str(link) for link in soup.find_all('a', href=True)]
+    return [link['href'] for link in soup.find_all('a', href=True)]
+
+def get_images(data):
+    soup = BeautifulSoup(data, 'lxml')
+    return [img['src'] for img in soup.find_all('img', src=True)]
+
+def get_scripts(data):
+    soup = BeautifulSoup(data, 'lxml')
+    return [script['src'] for script in soup.find_all('script', src=True)]
+
+
+def get_metas(data):
+    soup = BeautifulSoup(data, 'lxml')
+    return [meta.get('content') for meta in soup.find_all('meta', content=True)]
+
 
 async def post_request(payload):
     c = pycurl.Curl()
@@ -255,7 +291,7 @@ async def post_request(payload):
             #         print('Decoding using %s' % encoding)
             body = data_buf.getvalue()
             encoding = 'utf-8'
-            data = body.decode(encoding, 'ignore') if len(body)>0 else ''
+            data = body.decode(encoding, 'ignore') if len(body) > 0 else ''
 
             # if encoding is None:
             #     dammit = UnicodeDammit(body, ["utf-8", "gb2312", "gbk", "big5", "gb18030"], smart_quotes_to="html")
@@ -267,15 +303,15 @@ async def post_request(payload):
             headers['content'] = [h for h in headers['content'] if len(h) > 0]
 
             resp.update({
-                'url': payload.get('url'),
+                # 'url': payload.get('url'),
                 'data': data,
                 'headers': headers,
                 'encoding': encoding,
             })
-            post_func = payload.get('post_func')
-            if post_func:
-                post_func = load(post_func)
-                resp = post_func(payload, resp)
+            # post_func = payload.get('post_func')
+            # if post_func:
+            #     post_func = load(post_func)
+            #     resp = post_func(payload, resp)
             return resp
     finally:
         c.close()
