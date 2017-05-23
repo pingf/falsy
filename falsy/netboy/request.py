@@ -214,7 +214,7 @@ async def get_request(payload):
                 # 'soup': soup,
                 'title': get_title(soup_lxml),
                 'links': get_links(soup_lxml),
-                'styles': get_styles(soup_lxml),
+                'links2': get_links2(soup_lxml),
                 'metas': get_metas(soup_lxml),
                 'images': get_images(soup_lxml),
                 'scripts': get_scripts(soup_lxml),
@@ -258,7 +258,7 @@ def get_links(soup):
     return [link['href'] for link in soup.find_all('a', href=True)]
 
 
-def get_styles(soup):
+def get_links2(soup):
     return [style['href'] for style in soup.find_all('link', href=True)]
 
 
