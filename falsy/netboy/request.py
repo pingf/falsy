@@ -207,16 +207,18 @@ async def get_request(payload):
                     data = body.decode(charset, 'ignore')
             # headers.remove({})
             headers['content'] = [h for h in headers['content'] if len(h) > 0]
-            soup = BeautifulSoup(data, 'lxml')
+            soup_lxml = BeautifulSoup(data, 'lxml')
+            soup_html = BeautifulSoup(data, 'html.parser')
             resp.update({
                 'url': payload.get('url'),
                 # 'soup': soup,
-                'title': get_title(data),
-                'links': get_links(data),
-                'metas': get_metas(data),
-                'images': get_images(data),
-                'scripts': get_scripts(data),
-                'text': get_text(data),
+                'title': get_title(soup_lxml),
+                'links': get_links(soup_lxml),
+                'styles': get_styles(soup_lxml),
+                'metas': get_metas(soup_lxml),
+                'images': get_images(soup_lxml),
+                'scripts': get_scripts(soup_lxml),
+                'text': get_text(soup_html),
                 'data': data,
                 'headers': headers,
                 'charset': charset,
@@ -232,16 +234,13 @@ async def get_request(payload):
         c.close()
 
 
-def get_title(data):
-    soup = BeautifulSoup(data, 'lxml')
+def get_title(soup):
     if soup.title is None:
         return None
     return str(soup.title.get_text())
 
 
-def get_text(data):
-    soup = BeautifulSoup(data, 'html.parser')
-
+def get_text(soup):
     texts = soup.findAll(text=True)
 
     def visible(element):
@@ -254,21 +253,24 @@ def get_text(data):
     visible_texts = filter(visible, texts)
     return ' '.join(visible_texts)
 
-def get_links(data):
-    soup = BeautifulSoup(data, 'lxml')
+
+def get_links(soup):
     return [link['href'] for link in soup.find_all('a', href=True)]
 
-def get_images(data):
-    soup = BeautifulSoup(data, 'lxml')
+
+def get_styles(soup):
+    return [style['href'] for style in soup.find_all('link', href=True)]
+
+
+def get_images(soup):
     return [img['src'] for img in soup.find_all('img', src=True)]
 
-def get_scripts(data):
-    soup = BeautifulSoup(data, 'lxml')
+
+def get_scripts(soup):
     return [script['src'] for script in soup.find_all('script', src=True)]
 
 
-def get_metas(data):
-    soup = BeautifulSoup(data, 'lxml')
+def get_metas(soup):
     return [meta.get('content') for meta in soup.find_all('meta', content=True)]
 
 
@@ -308,6 +310,11 @@ async def post_request(payload):
                 'headers': headers,
                 'encoding': encoding,
             })
+            post_func = payload.get('post_func')
+            if type(post_func) == str:
+                post_func = load(post_func)
+            if post_func:
+                resp = post_func(payload, resp)
             # post_func = payload.get('post_func')
             # if post_func:
             #     post_func = load(post_func)

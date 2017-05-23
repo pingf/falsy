@@ -49,10 +49,11 @@ class CurlLoop:
                     result['spider'] = 'pycurl'
                     result['payload'] = payload = c._raw_payload
 
-                    post_func = payload.get('post_func')
-                    if post_func:
-                        post_func = load(post_func)
-                        result = post_func(payload, result)
+                    # post_func = payload.get('post_func')
+                    # if type(post_func) == str:
+                    #     post_func = load(post_func)
+                    # if post_func:
+                    #     result = post_func(payload, result)
 
                     cc.set_result(result)
                 for c, err_num, err_msg in fail:
@@ -68,8 +69,9 @@ class CurlLoop:
                     result['payload'] = payload = c._raw_payload
 
                     post_func = payload.get('post_func')
-                    if post_func:
+                    if type(post_func) == str:
                         post_func = load(post_func)
+                    if post_func:
                         result = post_func(payload, result)
                     cls._futures.pop(c).set_exception(CurlLoop.CurlException(code=err_num, desc=err_msg, data=result))
                 if num_ready == 0:
