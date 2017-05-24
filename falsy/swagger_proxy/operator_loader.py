@@ -226,7 +226,11 @@ class OperatorLoader:
             'object': json_check,
         }
         try:
-            value = check_funcs.get(type_, default_func)(value)
+
+            if 'allOf' in schema:
+                value = check_funcs.get(type_, json_check)(value)
+            else:
+                value = check_funcs.get(type_, default_func)(value)
             self.log.debug('param in body - name: {}, type: {}, value: {}'.format(name, type_, value))
         except ValueError as e:
             self.log.error_trace(
