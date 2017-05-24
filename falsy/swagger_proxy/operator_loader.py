@@ -211,7 +211,7 @@ class OperatorLoader:
 
         if param.get('required') and body is None:
             raise falcon.HTTPMissingParam(name)
-        default_func = lambda v: v if type_ is not None else None
+        default_func = lambda v: v
 
         check_funcs = {
             'string': lambda v: str(v),
