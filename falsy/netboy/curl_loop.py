@@ -25,7 +25,7 @@ class CurlLoop:
             try:
                 curl_ret = await cls._futures[c]
             except Exception as e:
-                print('exception', e)
+                print('exception', e, type(e))
                 raise e
             return curl_ret
         finally:

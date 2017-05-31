@@ -237,7 +237,8 @@ async def get_request(payload):
 def get_title(soup):
     if soup.title is None:
         return None
-    return str(soup.title.get_text())
+    text = str(soup.title.get_text())
+    return re.sub('\s+', ' ', text)
 
 
 def get_text(soup):
