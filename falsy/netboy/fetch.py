@@ -5,8 +5,8 @@ import asyncio as aio
 
 async def get_boy(payload):
     targets = []
-    for payload in payload:
-        targets.append(get_request(payload))
+    for p in payload:
+        targets.append(get_request(p))
     res = await aio.gather(
         *targets, return_exceptions=True
     )
@@ -14,8 +14,8 @@ async def get_boy(payload):
 
 async def post_boy(payload):
     targets = []
-    for payload in payload:
-        targets.append(post_request(payload))
+    for p in payload:
+        targets.append(post_request(p))
     res = await aio.gather(
         *targets, return_exceptions=True
     )
@@ -23,11 +23,11 @@ async def post_boy(payload):
 
 async def net_boy(payload):
     targets = []
-    for payload in payload:
-        if payload.get('postfields'):
-            targets.append(post_request(payload))
+    for p in payload:
+        if p.get('postfields'):
+            targets.append(post_request(p))
         else:
-            targets.append(get_request(payload))
+            targets.append(get_request(p))
     res = await aio.gather(
         *targets, return_exceptions=True
     )
