@@ -8,12 +8,16 @@ from falsy.jlog.jlog import JLog
 
 
 def json_check(value):
-    if type(value) == str:
-        try:
-            value = json.loads(value)
-        except json.decoder.JSONDecodeError as e:
-            value = ast.literal_eval(value)
-    return value
+    try:
+        if type(value) == str:
+            try:
+                value = json.loads(value)
+            except json.decoder.JSONDecodeError as e:
+                value = ast.literal_eval(value)
+        return value
+    except Exception as e:
+        raise falcon.HTTPInvalidParam('json check error:', str(e)+' '+str(type(e)))
+
 
 
 class OperatorLoader:
