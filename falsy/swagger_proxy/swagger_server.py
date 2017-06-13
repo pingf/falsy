@@ -158,6 +158,9 @@ class SwaggerServer:
                         if base_final:
                             base_final(req=req, resp=resp, **params)
                     return
+            except falcon.HTTPInvalidParam as e:
+                self.log.error_trace("http invalid param: {}".format(e))
+                raise e
             except Exception as e:
                 self.log.error_trace("process error: {}".format(e))
                 raise falcon.HTTPInternalServerError(title=str(type(e)), description=str(e))
