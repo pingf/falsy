@@ -1,3 +1,4 @@
+import json
 import re
 
 import pycurl
@@ -6,6 +7,7 @@ import uuid
 from falsy.loader.func import load
 
 DEFAULT_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm; Baiduspider/2.0; +http://www.baidu.com/search/spider.html) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80() Safari/537.36'
+
 
 def get_title(soup):
     if soup.title is None:
@@ -46,7 +48,6 @@ def get_scripts(soup):
 
 def get_metas(soup):
     return [meta.get('content') for meta in soup.find_all('meta', content=True)]
-
 
 
 def setup_curl_basic(c, p, data_buf, headers=None):
@@ -157,6 +158,8 @@ def setup_curl_basic(c, p, data_buf, headers=None):
         c.setopt(pycurl.PROXYTYPE, proxytype)
         if proxyuserpwd:
             c.setopt(pycurl.PROXYUSERPWD, proxyuserpwd)
+
+
 def setup_curl_for_get(c, p, data_buf, headers=None):
     setup_curl_basic(c, p, data_buf, headers)
     httpheader = p.get('httpheader')
@@ -182,4 +185,3 @@ def setup_curl_for_post(c, p, data_buf, headers=None):
         postfields = json.dumps(postfields)
         c.setopt(pycurl.POSTFIELDS, postfields)
     return c
-
