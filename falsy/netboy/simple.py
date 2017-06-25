@@ -14,12 +14,12 @@ if __name__ == "__main__":
         #
         #     'id':2
         # },
+        # {
+        #     'url': 'http://www.douban.com',
+        #     'dns_servers': '114.114.114.114'
+        # },
         {
-            'url': 'http://www.douban.com',
-            'dns_servers': '114.114.114.114'
-        },
-        {
-            'url': 'http://www.baidu.com',
+            'url': 'http://www.stackoverflowd.com',
             'dns_servers': '114.114.114.114'
         },
         # {
@@ -30,25 +30,26 @@ if __name__ == "__main__":
     ]
     boy=NetBoy(payload)
     ress = boy.run()
+    print(ress)
     # ress = run(net_boy(payload))
-    for res in ress:
-        if res is None:
-            print('res is None')
-            continue
-        # print(res.data)
-        print('>>>>>>')
-        # print(res)
-        print(res.effective_url)
-        print('>>>>2')
-        print(res.url)
-        # print(res.data)
-        print(res.id)
-        print('--------links----------')
-        for link in res.links:
-            print(link)
-            # print(link['href'])
-        print(res.title)
-        print(res.http_code)
+    # for res in ress:
+    #     if res is None:
+    #         print('res is None')
+    #         continue
+    #     # print(res.data)
+    #     print('>>>>>>')
+    #     # print(res)
+    #     print(res.effective_url)
+    #     print('>>>>2')
+    #     print(res.url)
+    #     # print(res.data)
+    #     print(res.id)
+    #     print('--------links----------')
+    #     for link in res.links:
+    #         print(link)
+    #         # print(link['href'])
+    #     print(res.title)
+    #     print(res.http_code)
         # print(json.dumps(res, indent=2))
 # print(json.dumps(res, indent=2))
 # if __name__ == "__main__":

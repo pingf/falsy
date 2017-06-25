@@ -24,9 +24,18 @@ class CurlLoop:
         try:
             try:
                 curl_ret = await cls._futures[c]
-            except Exception as e:
-                print('exception', e, type(e))
+            except CurlLoop.CurlException as e:
                 raise e
+            except Exception as e:
+                return {
+                    'url': c._raw_url,
+                    'id': c._raw_id,
+                    'payload': c._raw_payload,
+                    'spider': 'pycurl',
+                    'state': 'critical',
+                    'error_code': -1,
+                    'error_desc': "{} - {}".format(type(e), str(e)),
+                }
             return curl_ret
         finally:
             cls._multi.remove_handle(c)
@@ -59,6 +68,7 @@ class CurlLoop:
                 for c, err_num, err_msg in fail:
                     print('error:', err_num, err_msg, c.getinfo(pycurl.EFFECTIVE_URL))
                     result = curl_result(c)
+
                     result['url'] = c._raw_url
                     result['id'] = c._raw_id
                     result['state'] = 'error'
@@ -74,7 +84,7 @@ class CurlLoop:
                     if post_func:
                         result2 = post_func(payload, result)
                         if type(result2) is dict and len(result2) >= len(result):
-                            result=result2
+                            result = result2
                     cls._futures.pop(c).set_exception(CurlLoop.CurlException(code=err_num, desc=err_msg, data=result))
                 if num_ready == 0:
                     break

@@ -45,13 +45,13 @@ class NetBoy:
             elif type(v) == dict:
                 boy = NetBoy.Dict(v)
                 obj_ress.append(boy)
-            else:
-                boy = NetBoy.Dict({
-                    'state': 'critical',
-                    'spider': 'pycurl',
-                    'error_code': -1,
-                    'error_desc': "{} - {}".format(type(v), str(v)),
-                    'payload': real_payload
-                })
-                obj_ress.append(boy)
+            # else:
+            #     boy = NetBoy.Dict({
+            #         'state': 'critical',
+            #         'spider': 'pycurl',
+            #         'error_code': -1,
+            #         'error_desc': "{} - {}".format(type(v), str(v)),
+            #         'payload': real_payload
+            #     })
+            #     obj_ress.append(boy)
         return obj_ress
