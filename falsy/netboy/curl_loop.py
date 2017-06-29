@@ -14,6 +14,7 @@ class CurlLoop:
             self.data = data
 
     _multi = pycurl.CurlMulti()
+    _multi.setopt(pycurl.M_PIPELINING, 1)
     atexit.register(_multi.close)
     _futures = {}
 
@@ -25,7 +26,15 @@ class CurlLoop:
             try:
                 curl_ret = await cls._futures[c]
             except CurlLoop.CurlException as e:
-                raise e
+               return {
+                    'url': c._raw_url,
+                    'id': c._raw_id,
+                    'payload': c._raw_payload,
+                    'spider': 'pycurl',
+                    'state': 'error',
+                    'error_code': e.code,
+                    'error_desc': e.desc,
+                }
             except Exception as e:
                 return {
                     'url': c._raw_url,

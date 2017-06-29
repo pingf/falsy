@@ -27,7 +27,7 @@ class NetBoy:
     def __init__(self, payload=None):
         self.payload = payload
 
-    def run(self, payload=None):
+    def run(self, payload=None, loop=None):
         real_payload = payload
         if self.payload is None:
             real_payload = payload
@@ -35,7 +35,7 @@ class NetBoy:
             real_payload = self.payload
         else:
             real_payload = self.payload + payload
-        ress = run(net_boy(real_payload))
+        ress = run(net_boy(real_payload), loop=loop)
         obj_ress = []
         for v in ress:
             if type(v) == CurlLoop.CurlException:

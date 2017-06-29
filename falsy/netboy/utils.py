@@ -99,6 +99,7 @@ def setup_curl_basic(c, p, data_buf, headers=None):
     c.setopt(pycurl.URL, url.encode('utf-8'))
     c.setopt(pycurl.FOLLOWLOCATION, p.get('followlocation', 1))
     c.setopt(pycurl.MAXREDIRS, p.get('maxredirs', 5))
+
     # c.setopt(pycurl.WRITEHEADER, header_buf)
     headerfunction = p.get('headerfunction')
     if headerfunction is None:
