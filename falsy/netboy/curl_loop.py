@@ -87,13 +87,13 @@ class CurlLoop:
 
                     result['payload'] = payload = c._raw_payload
 
-                    post_func = payload.get('post_func')
-                    if type(post_func) == str:
-                        post_func = load(post_func)
-                    if post_func:
-                        result2 = post_func(payload, result)
-                        if type(result2) is dict and len(result2) >= len(result):
-                            result = result2
+                    # post_func = payload.get('post_func')
+                    # if type(post_func) == str:
+                    #     post_func = load(post_func)
+                    # if post_func:
+                    #     result2 = post_func(payload, result)
+                    #     if type(result2) is dict and len(result2) >= len(result):
+                    #         result = result2
                     cls._futures.pop(c).set_exception(CurlLoop.CurlException(code=err_num, desc=err_msg, data=result))
                 if num_ready == 0:
                     break

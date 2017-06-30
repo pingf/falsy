@@ -36,12 +36,16 @@ class ChromeECMAScriptException(Exception):
 import asyncio as aio
 
 
+class ChromeTargetException(Exception):
+    pass
+
+
 class ChromeBoy:
     def __init__(self, **kwargs):
         self._host = kwargs.get('host', 'localhost')
         self._port = kwargs.get('port', 9222)
         self._url = '%s:%d' % (self._host, self._port)
-        self._socket_timeout = kwargs.get('sockettimeout', 30)
+        self._socket_timeout = kwargs.get('sockettimeout', 20)
         self._browser_url = 'ws://' + self._url + '/devtools/browser'
         self._id = 0
         self._user_agent = kwargs.get('useragent')
@@ -53,18 +57,18 @@ class ChromeBoy:
         page = None
         target_id = None
 
+        retry = payload.get('retried', False)
         try:
-            target_id = self.new_blank_target(browser)
-            url = payload.get('url')
-            retry = payload.get('retry', False)
             socket_timeout = payload.get('sockettimeout') or self._socket_timeout
+            target_id = self.new_blank_target(browser)
+            page_url = 'ws://' + self._url + '/devtools/page/' + str(target_id)
+            page = websocket.create_connection(page_url, timeout=socket_timeout)
+            url = payload.get('url')
             load_timeout = payload.get('loadtimeout') or self._load_timeout
             user_agent = payload.get('useragent') or self._user_agent
             http_header = payload.get('httpheader') or self._http_header
             cookies = payload.get('cookies') or self._cookies
             self.json_endp()
-            page_url = 'ws://' + self._url + '/devtools/page/' + str(target_id)
-            page = websocket.create_connection(page_url, timeout=socket_timeout)
             self.enable_network(page)
             self.enable_page(page)
             self.set_user_agent(page, user_agent)
@@ -81,49 +85,99 @@ class ChromeBoy:
             #     data['state'] = 'normal'
             return self.crawl_info(data, payload, begin_time)
         except ChromeECMAScriptException as e:
-            error_data = {
-                'state': 'error',
-                'error_code': -1,
-                'error_desc': 'es error'
-            }
-            ret = self.crawl_info(error_data, payload, begin_time)
-            return ret
+            if retry:
+                error_data = {
+                    'state': 'error',
+                    'error_code': -1,
+                    'error_desc': 'es error'
+                }
+                ret = self.crawl_info(error_data, payload, begin_time)
+                return ret
+            else:
+                sleep(payload.get('retry_sleep', 3))
+                payload['sockettimeout'] = int(payload.get('sockettimeout') or self._socket_timeout) + payload.get(
+                    'retry_extra', 10)
+                payload['loadtimeout'] = int(payload.get('loadtimeout') or self._socket_timeout) + payload.get('retry_extra',
+                                                                                                               10)
+                payload['retried'] = True
+                return self.run1_core(payload, browser=browser, begin_time=begin_time)
         except ChromeEmptyException as e:
-            error_data = {
-                'state': 'error',
-                'error_code': -2,
-                'error_desc': 'data empty'
-            }
-            ret = self.crawl_info(error_data, payload, begin_time)
-            return ret
+            if retry:
+                error_data = {
+                    'state': 'error',
+                    'error_code': -2,
+                    'error_desc': 'data empty'
+                }
+                ret = self.crawl_info(error_data, payload, begin_time)
+                return ret
+            else:
+                sleep(payload.get('retry_sleep', 3))
+                payload['sockettimeout'] = int(payload.get('sockettimeout') or self._socket_timeout) + payload.get(
+                    'retry_extra', 10)
+                payload['loadtimeout'] = int(payload.get('loadtimeout') or self._socket_timeout) + payload.get('retry_extra',
+                                                                                                               10)
+                payload['retried'] = True
+                return self.run1_core(payload, browser=browser, begin_time=begin_time)
+
         except ChromeShortException as e:
-            error_data = {
-                'state': 'error',
-                'error_code': -3,
-                'error_desc': 'content too short'
-            }
-            ret = self.crawl_info(error_data, payload, begin_time)
-            return ret
-        except websocket.WebSocketTimeoutException as e:
+            if retry:
+                error_data = {
+                    'state': 'error',
+                    'error_code': -3,
+                    'error_desc': 'content too short'
+                }
+                ret = self.crawl_info(error_data, payload, begin_time)
+                return ret
+            else:
+                sleep(payload.get('retry_sleep', 3))
+                payload['sockettimeout'] = int(payload.get('sockettimeout') or self._socket_timeout) + payload.get(
+                    'retry_extra', 10)
+                payload['loadtimeout'] = int(payload.get('loadtimeout') or self._socket_timeout) + payload.get('retry_extra',
+                                                                                                               10)
+                payload['retried'] = True
+                return self.run1_core(payload, browser=browser, begin_time=begin_time)
+        except ChromeTargetException as e:
             if retry:
                 error_data = {
                     'state': 'critical',
                     'error_code': -4,
+                    'error_desc': 'target not created'
+                }
+                ret = self.crawl_info(error_data, payload, begin_time)
+                return ret
+            else:
+                sleep(payload.get('retry_sleep', 3))
+                payload['sockettimeout'] = int(payload.get('sockettimeout') or self._socket_timeout) + payload.get(
+                    'retry_extra', 10)
+                payload['loadtimeout'] = int(payload.get('loadtimeout') or self._socket_timeout) + payload.get('retry_extra',
+                                                                                                               10)
+                payload['retried'] = True
+                return self.run1_core(payload, browser=browser, begin_time=begin_time)
+        except websocket.WebSocketTimeoutException as e:
+            if retry:
+                error_data = {
+                    'state': 'critical',
+                    'error_code': -5,
                     'error_desc': str(type(e)) + ': ' + str(e)
                 }
                 ret = self.crawl_info(error_data, payload, begin_time)
                 return ret
             else:
-                return self.rerun1(payload, data)
-
+                sleep(payload.get('retry_sleep', 3))
+                payload['sockettimeout'] = int(payload.get('sockettimeout') or self._socket_timeout) + payload.get(
+                    'retry_extra', 10)
+                payload['loadtimeout'] = int(payload.get('loadtimeout') or self._socket_timeout) + payload.get('retry_extra',
+                                                                                                               10)
+                payload['retried'] = True
+                return self.run1_core(payload, browser=browser, begin_time=begin_time)
+                # return self.rerun1(payload, data)
         except Exception as e:
-
             print("-" * 60)
             traceback.print_exc(file=sys.stdout)
             print("-" * 60)
             error_data = {
                 'state': 'critical',
-                'error_code': -5,
+                'error_code': -7,
                 'error_desc': str(type(e)) + ': ' + str(e)
             }
             ret = self.crawl_info(error_data, payload, begin_time)
@@ -138,7 +192,7 @@ class ChromeBoy:
         data = None
         browser = None
         begin_time = datetime.datetime.now()
-        retry = payload.get('retry', False)
+        retry = payload.get('retried', False)
         try:
             socket_timeout = payload.get('sockettimeout') or self._socket_timeout
             browser = websocket.create_connection(self._browser_url, timeout=socket_timeout)
@@ -154,8 +208,13 @@ class ChromeBoy:
                 ret = self.crawl_info(error_data, payload, begin_time)
                 return ret
             else:
-                return self.rerun1(payload, data)
-
+                sleep(payload.get('retry_sleep', 3))
+                payload['sockettimeout'] = int(payload.get('sockettimeout') or self._socket_timeout) + payload.get(
+                    'retry_extra', 10)
+                payload['loadtimeout'] = int(payload.get('loadtimeout') or self._socket_timeout) + payload.get('retry_extra',
+                                                                                                               10)
+                payload['retried'] = True
+                return self.run1_core(payload, browser=browser, begin_time=begin_time)
         except Exception as e:
             error_data = {
                 'state': 'critical',
@@ -177,7 +236,6 @@ class ChromeBoy:
             'useragent': 'curl/7.53.1'
         }
         resp = get_it(payload)
-        # resp = boy.run(loop=self._loop)
         return resp
 
     def auto_id(self, value=None):
@@ -235,7 +293,7 @@ class ChromeBoy:
         resp = self.new_target(ws, "about:blank")
         if resp is None or resp.get('error') or resp.get('result') is None or resp.get('result').get(
                 'targetId') is None:
-            raise Exception('chrome target not created!')
+            raise ChromeTargetException('chrome target not created!')
         return resp.get('result').get('targetId')
 
     @property
@@ -321,7 +379,6 @@ class ChromeBoy:
             traceback.print_exc(file=sys.stdout)
             print("-" * 60)
             raise e
-            # raise ChromeHeadlessException('recv until exception: ' + str(e) + ': ' + str(type(e)))
 
     def eval_result(self, ws):
         result = self.eval_result_full(ws)
@@ -461,11 +518,7 @@ class ChromeBoy:
         hostname = urlparse(effect).hostname if effect else None
         data['ip'] = socket.gethostbyname(hostname) if hostname else None
         if len(data['body']) <= len('<body></body>'):
-            retry = payload.get('retry')
-            if retry is True:
-                raise ChromeShortException('too short in retry')
-            else:
-                return self.rerun1(payload, effect)
+            raise ChromeShortException('too short in retry')
         if payload.get('need_screenshot', True):
             screen = self.screenshot(ws, payload.get('shot_quality', 40), payload.get('shot_format', 'jpeg'))
         else:
@@ -483,19 +536,6 @@ class ChromeBoy:
             return None
         effect = data['location']['href']
         return effect
-
-    def rerun1(self, payload, data):
-        sleep(payload.get('retry_sleep', 3))
-        payload['sockettimeout'] = int(payload.get('sockettimeout') or self._socket_timeout) + payload.get(
-            'retry_extra', 10)
-        payload['loadtimeout'] = int(payload.get('loadtimeout') or self._socket_timeout) + payload.get('retry_extra',
-                                                                                                       10)
-        payload['retry'] = True
-        if data is not None:
-            effect = self.effect_url(data)
-            if type(effect) is str and effect.startswith('http'):
-                payload['url'] = effect
-        return self.run1(payload)
 
     def get_body(self, ws, node_id):
         req = {}
@@ -585,33 +625,21 @@ class ChromeBoy:
 
     def run(self, data, max=4):
         results = []
-        browser = None
-        begin_time = datetime.datetime.now()
-        try:
-            socket_timeout = 10  # payload.get('sockettimeout') or self._socket_timeout
-            browser = websocket.create_connection(self._browser_url, timeout=socket_timeout)
-
-            with futures.ThreadPoolExecutor(max_workers=max) as executor:
-                future_to_url = {}
-                for i, payload in enumerate(data):
-                    payload['chrome_id'] = i
-                    future_to_url[executor.submit(self.run1_core, payload, browser, begin_time)] = payload
-                for future in futures.as_completed(future_to_url):
-                    url = future_to_url[future]
-                    try:
-                        data = future.result()
-                    except Exception as exc:
-                        print('%r generated an exception: %s' % (url, exc))
-                    else:
-                        data['chrome_id'] = url['chrome_id']
-                        results.append(data)
-        except Exception as e:
-            print("-" * 60)
-            traceback.print_exc(file=sys.stdout)
-            print("-" * 60)
-        finally:
-            if browser is not None:
-                browser.close()
+        with futures.ThreadPoolExecutor(max_workers=max) as executor:
+            future_to_url = {}
+            for i, payload in enumerate(data):
+                payload['chrome_id'] = i
+                future_to_url[executor.submit(self.run1, payload)] = payload
+                # future_to_url[executor.submit(self.run1_core, payload, browser, begin_time)] = payload
+            for future in futures.as_completed(future_to_url):
+                url = future_to_url[future]
+                try:
+                    data = future.result()
+                except Exception as exc:
+                    print('%r generated an exception: %s' % (url, exc))
+                else:
+                    data['chrome_id'] = url['chrome_id']
+                    results.append(data)
 
         sorted_results = sorted(results, key=lambda tup: tup['chrome_id'])
         return sorted_results
@@ -620,16 +648,21 @@ class ChromeBoy:
 if __name__ == '__main__':
     a = ChromeBoy()
     payload = [
-        {'url': 'http://www.bing.com'},
+        # {'url': 'http://www.bing.com'},
         {'url': 'http://www.baidu.com'},
         {'url': 'http://www.douban.com'},
-        {'url': 'http://www.csdn.com'},
-    ]
+        {'url': "http://job.xyxww.com.cn"},
+        # {'url': "http://wx.pdsxww.com"},
+        # {'url': "http://fang.xiangcheng.org"},
+        # {'url': "http://kj.hnciq.org.cn"},
+        # {'url': "http://pub.dzdj.com.cn"},
+        ]
     resp = a.run(payload)
     for r in resp:
         print(r['chrome_id'])
         print(r.get('url'))
         print(r.get('title'))
+        print(r.get('text'))
         print(r['state'])
         # resp = a.run1({
         #     'url': 'http://www.douban.com'
