@@ -168,15 +168,15 @@ def pycurl_get_resp(data_buf, headers, payload, resp):
 import json
 
 if __name__ == '__main__':
-    # p = {
-    #     'url': 'http://www.douban.com',
-    #     'dns_servers': '114.114.114.114'
-    # }
-    # resp = get_it(p)
-    # print(json.dumps(resp, indent=2))
     p = {
-        "url": "http://127.0.0.1:8006/v1/progress",
-        "postfields": ["94679fb6-5245-11e7-9766-1c872c710a48"]
+        'url': 'http://www.bing.com',
     }
-    resp = post_it(p)
+    resp = get_it(p)
     print(json.dumps(resp, indent=2))
+    print(resp['data'][:100])
+    # p = {
+    #     "url": "http://127.0.0.1:8006/v1/progress",
+    #     "postfields": ["94679fb6-5245-11e7-9766-1c872c710a48"]
+    # }
+    # resp = post_it(p)
+    # print(json.dumps(resp, indent=2))

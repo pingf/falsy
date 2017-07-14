@@ -136,28 +136,11 @@ class ChromeBoy:
                                                                                                                10)
                 payload['retried'] = True
                 return self.run1_core(payload, browser=browser, begin_time=begin_time)
-        except ChromeTargetException as e:
-            if retry:
-                error_data = {
-                    'state': 'critical',
-                    'error_code': -4,
-                    'error_desc': 'target not created'
-                }
-                ret = self.crawl_info(error_data, payload, begin_time)
-                return ret
-            else:
-                sleep(payload.get('retry_sleep', 3))
-                payload['sockettimeout'] = int(payload.get('sockettimeout') or self._socket_timeout) + payload.get(
-                    'retry_extra', 10)
-                payload['loadtimeout'] = int(payload.get('loadtimeout') or self._socket_timeout) + payload.get('retry_extra',
-                                                                                                               10)
-                payload['retried'] = True
-                return self.run1_core(payload, browser=browser, begin_time=begin_time)
         except websocket.WebSocketTimeoutException as e:
             if retry:
                 error_data = {
-                    'state': 'critical',
-                    'error_code': -5,
+                    'state': 'error',
+                    'error_code': -4,
                     'error_desc': str(type(e)) + ': ' + str(e)
                 }
                 ret = self.crawl_info(error_data, payload, begin_time)
@@ -170,7 +153,23 @@ class ChromeBoy:
                                                                                                                10)
                 payload['retried'] = True
                 return self.run1_core(payload, browser=browser, begin_time=begin_time)
-                # return self.rerun1(payload, data)
+        except ChromeTargetException as e:
+            if retry:
+                error_data = {
+                    'state': 'critical',
+                    'error_code': -5,
+                    'error_desc': 'target not created'
+                }
+                ret = self.crawl_info(error_data, payload, begin_time)
+                return ret
+            else:
+                sleep(payload.get('retry_sleep', 3))
+                payload['sockettimeout'] = int(payload.get('sockettimeout') or self._socket_timeout) + payload.get(
+                    'retry_extra', 10)
+                payload['loadtimeout'] = int(payload.get('loadtimeout') or self._socket_timeout) + payload.get('retry_extra',
+                                                                                                               10)
+                payload['retried'] = True
+                return self.run1_core(payload, browser=browser, begin_time=begin_time)
         except Exception as e:
             print("-" * 60)
             traceback.print_exc(file=sys.stdout)
@@ -185,7 +184,14 @@ class ChromeBoy:
 
         finally:
             if page is not None:
-                page.close()
+                try:
+                    page.close()
+                except Exception as e:
+                    print("-" * 60)
+                    traceback.print_exc(file=sys.stdout)
+                    print("-" * 60)
+                    sleep(1)
+                    page.close()
             self.close_target(browser, target_id)
 
     def run1(self, payload):
@@ -614,8 +620,15 @@ class ChromeBoy:
         req['id'] = self.auto_id()
         req['method'] = 'Target.closeTarget'
         req['params'] = {"targetId": tid}
-        ws.send(json.dumps(req))
-        resp = self.recv4result(ws)
+        try:
+            ws.send(json.dumps(req))
+            resp = self.recv4result(ws)
+        except Exception as e:
+            print("-" * 60)
+            traceback.print_exc(file=sys.stdout)
+            print("-" * 60)
+            ws.send(json.dumps(req))
+            resp = self.recv4result(ws)
         return resp
 
     def beautify(self, data, charset):
@@ -649,13 +662,13 @@ if __name__ == '__main__':
     a = ChromeBoy()
     payload = [
         # {'url': 'http://www.bing.com'},
-        {'url': 'http://www.baidu.com'},
-        {'url': 'http://www.douban.com'},
-        {'url': "http://job.xyxww.com.cn"},
+        # {'url': 'http://www.baidu.com'},
+        # {'url': 'http://www.douban.com'},
+        # {'url': "http://job.xyxww.com.cn"},
         # {'url': "http://wx.pdsxww.com"},
         # {'url': "http://fang.xiangcheng.org"},
         # {'url': "http://kj.hnciq.org.cn"},
-        # {'url': "http://pub.dzdj.com.cn"},
+        {'url': "http://www.xxyjgb.com"},
         ]
     resp = a.run(payload)
     for r in resp:
