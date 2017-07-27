@@ -9,7 +9,7 @@ from falsy.swagger_proxy.spec_loader import SpecLoader
 
 
 def default_error_handler(req, resp, e):
-    resp.body = json.dumps({'title': str(type(e)), 'description': str(e)})
+    resp.body = json.dumps({'title': str(type(e)), 'description': str(e)}, indent=2, ensure_ascii=False)
     resp.status = falcon.HTTP_500
     resp.content_type = 'application/json'
 
@@ -36,7 +36,7 @@ def http_falcon_handler(req, resp, e):
     resp.body = json.dumps({'title': e.title,
                             'description': e.description,
                             'status': e.status,
-                            'args': ''.join([p for p in e.args])})
+                            'args': ''.join([p for p in e.args])}, indent=2, ensure_ascii=False)
     resp.status = e.status
     resp.content_type = 'application/json'
 
@@ -110,60 +110,60 @@ class SwaggerServer:
     def dispatch(self, req, resp):
         base_before, base_after, base_excp, base_final = self.op_loader.load_base(self.specs)
         for uri_regex, spec in self.specs.items():
-            try:
-                route_signature = '/' + req.method.lower() + req.relative_uri
-                if route_signature.find('?') > 0:
-                    route_signature = route_signature[:route_signature.find('?')]
-                if type(uri_regex) == str:
-                    continue
-                spec['route_signature'] = route_signature
-                req.spec = copy.deepcopy(spec)
+            # try:
+            route_signature = '/' + req.method.lower() + req.relative_uri
+            if route_signature.find('?') > 0:
+                route_signature = route_signature[:route_signature.find('?')]
+            if type(uri_regex) == str:
+                continue
+            spec['route_signature'] = route_signature
+            req.spec = copy.deepcopy(spec)
 
-                match = uri_regex.match(route_signature)
-                if match:
-                    handler, params, before, after, excp, final, mode = self.op_loader.load(req=req, spec=spec,
-                                                                                            matched_uri=match)
-                    handler_return = None
-                    try:
-                        if base_before:
-                            base_before(req=req, resp=resp, **params)
-                        if before:
-                            before(req=req, resp=resp, **params)
-                        if mode == 'raw':
-                            handler_return = handler(req=req, resp=resp)
+            match = uri_regex.match(route_signature)
+            if match:
+                handler, params, before, after, excp, final, mode = self.op_loader.load(req=req, spec=spec,
+                                                                                        matched_uri=match)
+                handler_return = None
+                try:
+                    if base_before:
+                        base_before(req=req, resp=resp, **params)
+                    if before:
+                        before(req=req, resp=resp, **params)
+                    if mode == 'raw':
+                        handler_return = handler(req=req, resp=resp)
+                    else:
+                        if mode == 'more':
+                            handler_return = handler(req=req, resp=resp, **params)
                         else:
-                            if mode == 'more':
-                                handler_return = handler(req=req, resp=resp, **params)
-                            else:
-                                handler_return = handler(**params)
+                            handler_return = handler(**params)
 
-                            content_type = self.produces(spec.get('produces'), self.specs.get('produces'))
-                            self.process_response(req, resp, handler_return, content_type)
-                        if after:
-                            after(req=req, resp=resp, response=handler_return, **params)
-                        if base_after:
-                            base_after(req=req, resp=resp, **params)
+                        content_type = self.produces(spec.get('produces'), self.specs.get('produces'))
+                        self.process_response(req, resp, handler_return, content_type)
+                    if after:
+                        after(req=req, resp=resp, response=handler_return, **params)
+                    if base_after:
+                        base_after(req=req, resp=resp, **params)
 
-                    except Exception as e:
-                        throw_out = True
-                        if base_excp is not None:
-                            throw_out = base_excp(req=req, resp=resp, error=e)
-                        if excp is not None:
-                            throw_out = excp(req=req, resp=resp, error=e)
-                        if throw_out:
-                            raise e
-                    finally:
-                        if final:
-                            final(req=req, resp=resp, response=handler_return, **params)
-                        if base_final:
-                            base_final(req=req, resp=resp, **params)
-                    return
-            except falcon.HTTPInvalidParam as e:
-                self.log.error_trace("http invalid param: {}".format(e))
-                raise e
-            except Exception as e:
-                self.log.error_trace("process error: {}".format(e))
-                raise falcon.HTTPInternalServerError(title=str(type(e)), description=str(e))
+                except Exception as e:
+                    throw_out = True
+                    if base_excp is not None:
+                        throw_out = base_excp(req=req, resp=resp, error=e)
+                    if excp is not None:
+                        throw_out = excp(req=req, resp=resp, error=e)
+                    if throw_out:
+                        raise e
+                finally:
+                    if final:
+                        final(req=req, resp=resp, response=handler_return, **params)
+                    if base_final:
+                        base_final(req=req, resp=resp, **params)
+                return
+            # except falcon.HTTPInvalidParam as e:
+            #     self.log.error_trace("http invalid param: {}".format(e))
+            #     raise e
+            # except Exception as e:
+            #     self.log.error_trace("process error: {}".format(e))
+            #     raise falcon.HTTPInternalServerError(title=str(type(e)), description=str(e))
         self.log.info("url does not match any route signature or match error: {}".format(route_signature))
         raise falcon.HTTPNotFound()
 
@@ -189,15 +189,15 @@ class SwaggerServer:
             if type(pre_body) == dict:
                 if 'json' in content_type:
                     pre_body.update(data)
-                    resp.body = json.dumps(pre_body, indent=2)
+                    resp.body = json.dumps(pre_body, indent=2, ensure_ascii=False)
                 else:
-                    resp.body = json.dumps(pre_body) + data
+                    resp.body = json.dumps(pre_body, ensure_ascii=False) + data
             else:
-                resp.body = pre_body + json.dumps(data, indent=2) if 'json' in content_type else json.dumps(
-                    pre_body) + str(data)
+                resp.body = pre_body + json.dumps(data, indent=2, ensure_ascii=False) if 'json' in content_type else json.dumps(
+                    pre_body, indent=2, ensure_ascii=False) + str(data)
         else:
             if 'json' in content_type or type(data) == dict:
-                resp.body = json.dumps(data, indent=2)
+                resp.body = json.dumps(data, indent=2, ensure_ascii=False)
             elif type(data) == str or type(data) == bytes:
                 resp.body = data
             else:

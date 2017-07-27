@@ -183,6 +183,6 @@ def setup_curl_for_post(c, p, data_buf, headers=None):
     c.setopt(pycurl.POST, 1)
     postfields = p.get('postfields')
     if postfields:
-        postfields = json.dumps(postfields)
+        postfields = json.dumps(postfields, indent=2, ensure_ascii=False)
         c.setopt(pycurl.POSTFIELDS, postfields)
     return c
