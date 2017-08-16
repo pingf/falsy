@@ -19,14 +19,14 @@ class JLog:
     def setup(self, config=None):
         if config is not None:
             highlights = config.get('highlights')
-            logfile = config.get('logfile', 'falsy.log')
+            logfile = config.get('logfile', '/tmp/falsy.log')
             file_level = config.get('file_level', 'DEBUG')
             console_level = config.get('console_level', 'DEBUG')
             handlers = config.get('handlers', ['file', 'console'])
             extra_loggers = config.get('extra_loggers')
         else:
             highlights = None
-            logfile = 'falsy.log'
+            logfile = '/tmp/falsy.log'
             file_level = console_level = 'DEBUG'
             handlers = ['file', 'console']
             extra_loggers = None

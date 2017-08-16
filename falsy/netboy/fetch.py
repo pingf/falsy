@@ -21,13 +21,13 @@ async def post_boy(payload):
     )
     return res
 
-async def net_boy(payload):
+async def net_boy(payload, share=None):
     targets = []
     for p in payload:
         if p.get('postfields'):
-            targets.append(post_request(p))
+            targets.append(post_request(p, share))
         else:
-            targets.append(get_request(p))
+            targets.append(get_request(p, share))
     res = await aio.gather(
         *targets, return_exceptions=True
     )

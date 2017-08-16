@@ -45,13 +45,13 @@ from falsy.netboy.utils import get_title, get_links2
 #         c.setopt(c.XFERINFOFUNCTION, load(xferinfo))
 
 # Single curl request:
-async def get_request(payload):
+async def get_request(payload, share=None):
     c = pycurl.Curl()
     data_buf = BytesIO()
     # header_buf = BytesIO()
     headers = {'count': 0, 'content': [{}]}
     try:
-        setup_curl_for_get(c, payload, data_buf, headers)  # header_buf)
+        setup_curl_for_get(c, payload, data_buf, headers, share)  # header_buf)
 
         with aiohttp.Timeout(payload.get('aiohttp_timeout', 60)):
             resp = await CurlLoop.handler_ready(c)
@@ -102,13 +102,13 @@ async def get_request(payload):
         c.close()
 
 
-async def post_request(payload):
+async def post_request(payload, share=None):
     c = pycurl.Curl()
     data_buf = BytesIO()
     # header_buf = BytesIO()
     headers = {'count': 0, 'content': [{}]}
     try:
-        setup_curl_for_post(c, payload, data_buf, headers)  # header_buf)
+        setup_curl_for_post(c, payload, data_buf, headers, share)  # header_buf)
 
         with aiohttp.Timeout(payload.get('aiohttp_timeout', 60)):
             resp = await CurlLoop.handler_ready(c)

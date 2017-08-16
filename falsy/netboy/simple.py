@@ -19,8 +19,10 @@ if __name__ == "__main__":
         #     'dns_servers': '114.114.114.114'
         # },
         {
-            'url': 'http://www.stackoverflowd.com',
-            'dns_servers': '114.114.114.114'
+            'url': 'http://www.baidu.com',
+        },
+        {
+            'url': 'http://www.douban.com',
         },
         # {
         #     'url': 'http://www.google.com',
@@ -28,12 +30,12 @@ if __name__ == "__main__":
         #     'id':1
         # },
     ]
-    payload=[{'url': 'http://lwjk.hncd.cn:8091/hnjtyjws', 'useragent': 'Mozilla/5.0', 'followlocation': 0, 'aiohttp_timeout': 60, 'connecttimeout': 30, 'timeout': 30}]
-    boy=NetBoy(payload)
+    # payload=[{'url': 'http://lwjk.hncd.cn:8091/hnjtyjws', 'useragent': 'Mozilla/5.0', 'followlocation': 0, 'aiohttp_timeout': 60, 'connecttimeout': 30, 'timeout': 30}]
+    boy=NetBoy(payload, share=True)
     ress = boy.run()
-    print('>>>>>>>>>>.')
-    print(ress)
-    print(json.dumps(ress,indent=2))
+    # print('>>>>>>>>>>.')
+    # print(ress)
+    # print(json.dumps(ress,indent=2))
     # ress = run(net_boy(payload))
     # for res in ress:
     #     if res is None:

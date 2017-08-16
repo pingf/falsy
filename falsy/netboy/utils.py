@@ -50,7 +50,7 @@ def get_metas(soup):
     return [meta.get('content') for meta in soup.find_all('meta', content=True)]
 
 
-def setup_curl_basic(c, p, data_buf, headers=None):
+def setup_curl_basic(c, p, data_buf, headers=None, share=None):
     def header_function(header_line):
         count = headers['count']
         header_line = header_line.decode('iso-8859-1')
@@ -118,7 +118,14 @@ def setup_curl_basic(c, p, data_buf, headers=None):
     c.setopt(pycurl.CONNECTTIMEOUT, p.get('connecttimeout', 7))
     c.setopt(pycurl.TIMEOUT, p.get('timeout', 15))
     c.setopt(pycurl.DNS_CACHE_TIMEOUT, p.get('dns_cache_timeout', 360))
-    c.setopt(pycurl.DNS_USE_GLOBAL_CACHE, p.get('dns_use_global_cache', 1))
+    # c.setopt(pycurl.DNS_USE_GLOBAL_CACHE, p.get('dns_use_global_cache', 1))
+
+    if share:
+        c.setopt(pycurl.SHARE, share)
+
+
+
+
     c.setopt(pycurl.TCP_NODELAY, p.get('tcp_nodelay', 1))
     c.setopt(pycurl.IPRESOLVE, p.get('ipresolve', pycurl.IPRESOLVE_V4))
     c.setopt(pycurl.ENCODING, p.get('encoding', 'gzip, deflate'))
@@ -161,8 +168,8 @@ def setup_curl_basic(c, p, data_buf, headers=None):
             c.setopt(pycurl.PROXYUSERPWD, proxyuserpwd)
 
 
-def setup_curl_for_get(c, p, data_buf, headers=None):
-    setup_curl_basic(c, p, data_buf, headers)
+def setup_curl_for_get(c, p, data_buf, headers=None, share=None):
+    setup_curl_basic(c, p, data_buf, headers, share)
     httpheader = p.get('httpheader')
     if httpheader:
         # c.setopt(pycurl.HEADER, p.get('header', 1))
@@ -170,8 +177,8 @@ def setup_curl_for_get(c, p, data_buf, headers=None):
     return c
 
 
-def setup_curl_for_post(c, p, data_buf, headers=None):
-    setup_curl_basic(c, p, data_buf, headers)
+def setup_curl_for_post(c, p, data_buf, headers=None, share=None):
+    setup_curl_basic(c, p, data_buf, headers, share)
     httpheader = p.get('httpheader', ['Accept: application/json', "Content-type: application/json"])
     if httpheader:
         # c.setopt(pycurl.HEADER, p.get('header', 1))
